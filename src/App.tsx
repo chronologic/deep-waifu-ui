@@ -5,7 +5,9 @@ import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { LandingPage } from './components';
+import { MainHeader, MainContent, MainFooter } from './components';
+import { GeneratorHeader } from './generator';
+import { CertificateHeader } from './certificate';
 import Providers from './Providers';
 import GlobalStyle from './GlobalStyle';
 
@@ -34,8 +36,20 @@ function App() {
       }
     >
       <Switch>
-        <Route path="*">
-          <LandingPage />
+        <Route exact path="/certificate">
+          <CertificateHeader />
+          <MainContent />
+          <MainFooter />
+        </Route>
+        <Route exact path="/generator">
+          <GeneratorHeader />
+          <MainContent />
+          <MainFooter />
+        </Route>
+        <Route path="/">
+          <MainHeader />
+          <MainContent />
+          <MainFooter />
         </Route>
       </Switch>
     </Suspense>
