@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Typography, Card, Space, Button, Image } from 'antd';
-import { flamingo } from './colors';
+import { flamingo } from '../colors';
 
 const { Title, Text } = Typography;
 
@@ -14,10 +14,10 @@ export default function Pillow() {
             <Title className="titleFeatures">Order Pillow</Title>
           </div>
           <PillowBase>
-            <Image width={180} preview={false} src={require('../img/pillow-base.png').default} />
+            <Image width={180} preview={false} src={'../img/pillow-base.png'} />
           </PillowBase>
           <PillowImage>
-            <Image width={180} preview={false} src={require('../img/waifu/waifu9.png').default} />
+            <Image width={180} preview={false} src={'../img/waifu/waifu9.png'} />
           </PillowImage>
           <Text className="text14">
             Get your DeepWaifu printed on both sides of a 18"x18" pillow in full color. The pillows are soft yet

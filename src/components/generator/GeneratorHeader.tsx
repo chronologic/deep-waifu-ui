@@ -1,8 +1,23 @@
 import styled from 'styled-components';
-import { Typography, Layout, Space, Divider, Button, Dropdown, Menu, Image, Row, Col, Card, message } from 'antd';
-import { DownOutlined, LogoutOutlined, LinkOutlined, FilePdfOutlined } from '@ant-design/icons';
-import { flamingo, whitesmoke, bluegrey } from '../components/colors';
-import Pillow from '../components/Pillow';
+import {
+  Typography,
+  Layout,
+  Space,
+  Divider,
+  Button,
+  Dropdown,
+  Menu,
+  Image,
+  Row,
+  Col,
+  Card,
+  Input,
+  Switch,
+  message,
+} from 'antd';
+import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { flamingo, whitesmoke } from '../colors';
+import { Pillow } from '../pillow';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -20,7 +35,7 @@ const menu = (
   </Menu>
 );
 
-export default function CertificateHeader() {
+export default function GeneratorHeader() {
   return (
     <Layout>
       <FixedHeader>
@@ -45,67 +60,52 @@ export default function CertificateHeader() {
         <Content>
           <Row className="mainTitle">
             <Title className="titleRed">(´｡• ω •｡`)</Title>
-            <Title>&nbsp;Your DeepWaifu NFT has been listed!</Title>
+            <Title>&nbsp;Here’s your DeepWaifu!</Title>
           </Row>
           <Row className="flow">
             <Col flex="640px">
-              <Overlay>
-                <Certificate>
-                  <Card
-                    hoverable
-                    cover={<img height="451" alt="certificate" src={require('../img/mockup-blank.jpg').default} />}
-                  ></Card>
-                </Certificate>
-                <CertificateImage>
-                  <Image width={256} preview={false} src={require('../img/waifu/waifu9.png').default} />
-                </CertificateImage>
-                <TextBlock>
+              <Certificate>
+                <Card hoverable>
                   <Row className="flow">
-                    <Col flex="240px">
+                    <Col>
+                      <CertificateImage>
+                        <Card className="certImage">
+                          <Space direction="vertical" size="large">
+                            <Image width={280} preview={false} src={'../img/waifu/waifu9.png'} />
+                            <Button type="link" danger>
+                              Re-upload selfie
+                            </Button>
+                          </Space>
+                        </Card>
+                      </CertificateImage>
+                    </Col>
+                    <Col>
                       <Space direction="vertical">
                         <Title className="title30">Certificate of Adoption</Title>
                         <Text className="titleJumbo">養子縁組証明書</Text>
                         <Text strong className="text14">
                           Let it be known to all that the holder of the DeepWaifu known by the name of
                         </Text>
-                        <Text className="titleName">Himari</Text>
+                        <Input size="large" placeholder="DeepWaifu’s Name" />
                         <Text strong className="text14">
                           has agreed to provide a loving home for this waifu and promised to keep it safe.
                         </Text>
-                        <br />
-                        <Text className="text8">
-                          <strong>Token ID:</strong> 0001
-                        </Text>
-                        <Text className="text8">
-                          <strong>Holder:</strong> GKvqsuNcnwWqPzzuhLmGi4rzzh55FhJtGizkhHaEJqiV
-                        </Text>
+                        <Input size="large" placeholder="Your Email" />
+                        <Text className="text12">Your email will be kept private</Text>
                       </Space>
                     </Col>
                   </Row>
-                </TextBlock>
-              </Overlay>
+                </Card>
+              </Certificate>
               <Mint>
                 <Space direction="vertical" size="middle">
-                  <div className="mintBtn">
-                    <Space direction="horizontal" size="large">
-                      <Button danger size="large">
-                        Tweet it!
-                      </Button>
-                      <Button type="primary" size="large" danger>
-                        View NFT
-                      </Button>
-                    </Space>
-                  </div>
-                  <div className="mintBtn">
-                    <Space direction="horizontal" size="large">
-                      <Button type="link" danger icon={<LinkOutlined />}>
-                        View on Solanascan
-                      </Button>
-                      <Button type="link" danger icon={<FilePdfOutlined />}>
-                        Download PDF
-                      </Button>
-                    </Space>
-                  </div>
+                  <Switch checkedChildren="Pay with SOL" unCheckedChildren="Pay with DAY" defaultChecked size="small" />
+                  <Button type="primary" size="large" danger>
+                    Mint DeepWaifu NFT
+                  </Button>
+                  <Text className="text12">
+                    Hurry up, you have only <strong> 999 NFTs left to mint!</strong>
+                  </Text>
                 </Space>
               </Mint>
             </Col>
@@ -134,54 +134,18 @@ const CustomMenu = styled.div`
   }
 `;
 
-const Overlay = styled.div`
-  position: relative;
-  top: 0;
-  left: 0;
-`;
-
 const Certificate = styled.div`
   text-align: center;
-  position: relative;
-  top: 0;
-  left: 0;
-  margin-bottom: 3em;
-
-  .ant-card-body {
-    display: none;
-  }
-  .ant-card-cover,
-  .ant-card-bordered {
-    height: 451px;
-  }
 `;
 
 const CertificateImage = styled.div`
-  position: absolute;
-  top: 140px;
-  left: 70px;
-  transform: rotate(-14.5deg);
-  mix-blend-mode: multiply;
-`;
-
-const TextBlock = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 365px;
-  transform: rotate(-14.5deg);
-  text-align: center;
-  mix-blend-mode: multiply;
-
-  .titleName {
-    font-family: Hachi Maru Pop;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 30px;
-    line-height: 36px;
-    color: ${flamingo};
+  .certImage {
+    width: 310px;
+    height: 310px;
+    margin: 0 3em 1em 0;
   }
-  .text14 {
-    color: ${bluegrey};
+  .ant-card-body {
+    padding: 1em;
   }
 `;
 
@@ -197,9 +161,6 @@ const Mint = styled.div`
   }
   .ant-switch-checked:focus {
     box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
-  }
-  .mintBtn {
-    display: block;
   }
 `;
 
@@ -249,10 +210,6 @@ const CustomContent = styled.div`
     padding: 1em 0 2em;
   }
 
-  .certificate {
-    text-align: center;
-  }
-
   .titleFeaturesRed {
     font-size: 16px;
     color: ${flamingo};
@@ -267,7 +224,6 @@ const CustomContent = styled.div`
     font-size: 30px;
     margin: 0px;
     margin-top: 0px !important;
-    color: ${bluegrey};
   }
   .titleJumbo {
     font-family: Hachi Maru Pop;
@@ -282,10 +238,6 @@ const CustomContent = styled.div`
   }
   .text12 {
     font-size: 12px;
-  }
-  .text8 {
-    font-size: 8px;
-    color: ${bluegrey};
   }
   .flow {
     flex-flow: initial;

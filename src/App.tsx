@@ -5,9 +5,9 @@ import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { MainHeader, MainContent, MainFooter } from './components';
-import { GeneratorHeader } from './generator';
-import { CertificateHeader } from './certificate';
+import { MainHeader, MainContent, MainFooter } from './components/main';
+import { GeneratorHeader } from './components/generator';
+import { CertificateHeader } from './components/certificate';
 import Providers from './Providers';
 import GlobalStyle from './GlobalStyle';
 

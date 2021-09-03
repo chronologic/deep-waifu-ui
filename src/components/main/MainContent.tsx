@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Typography, Layout, Row, Col, Button, Image, Card } from 'antd';
 import { TwitterCircleFilled, GithubFilled } from '@ant-design/icons';
-import { flamingo, whitesmoke } from './colors';
+import { flamingo, whitesmoke } from '../colors';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -28,19 +28,19 @@ export default function MainContent() {
               <Col span={8}>
                 <Title className="titleFeaturesRed">(=^･ω･^=)</Title>
                 <Title className="titleFeatures">Upload Selfie</Title>
-                <Image preview={false} src={require('../img/selfie/selfie12.jpg').default} />
+                <Image preview={false} src={'../img/selfie/selfie12.jpg'} />
                 <Text className="text16">Let a non-human artist draw your anime-style portrait.</Text>
               </Col>
               <Col span={8}>
                 <Title className="titleFeaturesRed">(´｡• ω •｡`)</Title>
                 <Title className="titleFeatures">Mint NFT</Title>
-                <Image preview={false} src={require('../img/waifu/waifu12.png').default} />
+                <Image preview={false} src={'../img/waifu/waifu12.png'} />
                 <Text className="text16">Trade exlusive, high-quality NFTs minted on the blockchain.</Text>
               </Col>
               <Col span={8}>
                 <Title className="titleFeaturesRed">ヽ(*・ω・)ﾉ</Title>
                 <Title className="titleFeatures">Order Pillow</Title>
-                <Image preview={false} src={require('../img/pillow.png').default} />
+                <Image preview={false} src={'../img/pillow.png'} />
                 <Text className="text16">Get your Waifu printed in full color on both sides of a pillar.</Text>
               </Col>
             </Row>
@@ -62,7 +62,7 @@ export default function MainContent() {
           </TextBlock>
           <Certificate>
             <Card>
-              <Image preview={false} src={require('../img/mockup.jpg').default} />
+              <Image preview={false} src={'../img/mockup.jpg'} />
             </Card>
           </Certificate>
           <br />
