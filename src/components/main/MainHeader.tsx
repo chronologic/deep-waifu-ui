@@ -1,66 +1,30 @@
+import { useCallback } from 'react';
 import styled from 'styled-components';
-import { Typography, Layout, Upload, Image, Divider, Button, Dropdown, Menu, message } from 'antd';
-import { CloudUploadOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Layout, Image } from 'antd';
+
 import { flamingo } from '../colors';
+import ImageUploader from './ImageUploader';
+import { useSelfie } from '../../hooks';
+import { useHistory } from 'react-router-dom';
+import { AppHeader } from '../shared';
 
-const { Header, Content } = Layout;
-const { Dragger } = Upload;
-const { Title } = Typography;
-
-function handleMenuClick(e: any) {
-  message.info('Click on menu item.');
-  console.log('click', e);
-}
-
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="1" icon={<LogoutOutlined />}>
-      Disconnect
-    </Menu.Item>
-  </Menu>
-);
-
-const props = {
-  name: 'file',
-  multiple: true,
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  onChange(info: any) {
-    const { status } = info.file;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  onDrop(e: any) {
-    console.log('Dropped files', e.dataTransfer.files);
-  },
-};
+const { Content } = Layout;
 
 export default function MainHeader() {
+  const history = useHistory();
+  const { onSelfieChange } = useSelfie();
+
+  const handleSelfieUploadDone = useCallback(
+    (selfie: File) => {
+      onSelfieChange(selfie);
+      history.push('/generator');
+    },
+    [history, onSelfieChange]
+  );
+
   return (
     <Layout>
-      <FixedHeader>
-        <CustomHeader>
-          <Header>
-            <CustomMenu>
-              <Title>Deep</Title>
-              <Title className="titleRed">Waifu</Title>
-              <Divider type="vertical" />
-              <Title>ディープ</Title>
-              <Title className="titleRed">ワイフ</Title>
-              <Dropdown className="wallet" overlay={menu}>
-                <Button>
-                  GKvqs...EJqiV <DownOutlined />
-                </Button>
-              </Dropdown>
-            </CustomMenu>
-          </Header>
-        </CustomHeader>
-      </FixedHeader>
+      <AppHeader />
       <CustomContent id="upload">
         <Content>
           <div className="grid-layout">
@@ -145,14 +109,7 @@ export default function MainHeader() {
               </div>
             </div>
             <div className="grid-item span-1">
-              <Dragger {...props} showUploadList={false}>
-                <p className="ant-upload-drag-icon">
-                  <CloudUploadOutlined />
-                </p>
-                <Title className="titleRed">(=^･ω･^=)</Title>
-                <Title>Upload a Selfie Here</Title>
-                <p>Photos you upload will NOT BE PUBLISHED</p>
-              </Dragger>
+              <ImageUploader onUploadDone={handleSelfieUploadDone} />
             </div>
             <div className="grid-item span-2">
               <div className="selfie">
@@ -272,47 +229,6 @@ export default function MainHeader() {
     </Layout>
   );
 }
-
-const CustomMenu = styled.div`
-  display: flex;
-  padding-top: 1.2em;
-
-  .wallet {
-    margin-left: auto;
-    margin-top: 1em;
-  }
-  .ant-btn:hover,
-  .ant-btn:focus {
-    color: ${flamingo};
-    border-color: ${flamingo};
-  }
-`;
-
-const CustomHeader = styled.div`
-  .ant-layout-header {
-    height: 8em;
-    background: white;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  .titleRed {
-    color: ${flamingo};
-  }
-  .ant-divider-vertical {
-    top: 1.3em;
-    height: 1.6em;
-    border-left: 2px solid rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const FixedHeader = styled.div`
-  position: fixed;
-  z-index: 1;
-  width: 100%;
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-  background: white;
-`;
 
 const CustomContent = styled.div`
   .ant-layout-content {

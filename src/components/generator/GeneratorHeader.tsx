@@ -1,68 +1,70 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  Typography,
-  Layout,
-  Space,
-  Divider,
-  Button,
-  Dropdown,
-  Menu,
-  Image,
-  Row,
-  Col,
-  Card,
-  Input,
-  Switch,
-  message,
-} from 'antd';
-import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Typography, Layout, Space, Button, Image, Row, Col, Card, Input, Switch } from 'antd';
+
 import { flamingo, whitesmoke } from '../colors';
 import { Pillow } from '../pillow';
+import { useSelfie } from '../../hooks';
+import { AppHeader } from '../shared';
+import { fileToDataUrl } from '../../utils';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
-function handleMenuClick(e: any) {
-  message.info('Click on menu item.');
-  console.log('click', e);
-}
-
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="1" icon={<LogoutOutlined />}>
-      Disconnect
-    </Menu.Item>
-  </Menu>
-);
-
 export default function GeneratorHeader() {
+  const history = useHistory();
+  const { loading, selfie, waifu, onReset } = useSelfie();
+  const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
+  const [selfieDataUrl, setSelfieDataUrl] = useState<string>();
+
+  const handleReset = useCallback(() => {
+    onReset();
+    history.push('/');
+  }, [history, onReset]);
+
+  useEffect(() => {
+    async function convertWaifuToDataUrl() {
+      const dataUrl = await fileToDataUrl(waifu as File);
+      setWaifuDataUrl(dataUrl);
+    }
+
+    if (waifu) {
+      convertWaifuToDataUrl();
+    }
+  }, [waifu]);
+
+  useEffect(() => {
+    async function convertSelfieToDataUrl() {
+      const dataUrl = await fileToDataUrl(selfie as File);
+      setSelfieDataUrl(dataUrl);
+    }
+
+    if (selfie) {
+      convertSelfieToDataUrl();
+    }
+  }, [selfie]);
+
   return (
     <Layout>
-      <FixedHeader>
-        <CustomHeader>
-          <Header>
-            <CustomMenu>
-              <Title>Deep</Title>
-              <Title className="titleRed">Waifu</Title>
-              <Divider type="vertical" />
-              <Title>ディープ</Title>
-              <Title className="titleRed">ワイフ</Title>
-              <Dropdown className="wallet" overlay={menu}>
-                <Button>
-                  GKvqs...EJqiV <DownOutlined />
-                </Button>
-              </Dropdown>
-            </CustomMenu>
-          </Header>
-        </CustomHeader>
-      </FixedHeader>
+      <AppHeader />
       <CustomContent id="upload">
         <Content>
           <Row className="mainTitle">
-            <Title className="titleRed">(´｡• ω •｡`)</Title>
-            <Title>&nbsp;Here’s your DeepWaifu!</Title>
+            {!loading && (
+              <>
+                <Title className="titleRed">(´｡• ω •｡`)</Title>
+                <Title>&nbsp;Here’s your DeepWaifu!</Title>
+              </>
+            )}
+            {loading && (
+              <>
+                <Title className="titleRed">( ☆ ω ☆ )</Title>
+                <Title>&nbsp;Generating your DeepWaifu...</Title>
+              </>
+            )}
           </Row>
-          <Row className="flow">
+          <Row className={loading ? 'flow blur' : 'flow'}>
             <Col flex="640px">
               <Certificate>
                 <Card hoverable>
@@ -71,8 +73,8 @@ export default function GeneratorHeader() {
                       <CertificateImage>
                         <Card className="certImage">
                           <Space direction="vertical" size="large">
-                            <Image width={280} preview={false} src={'../img/waifu/waifu9.png'} />
-                            <Button type="link" danger>
+                            <Image width={280} preview={false} src={waifuDataUrl || selfieDataUrl} />
+                            <Button type="link" danger onClick={handleReset}>
                               Re-upload selfie
                             </Button>
                           </Space>
@@ -104,13 +106,13 @@ export default function GeneratorHeader() {
                     Mint DeepWaifu NFT
                   </Button>
                   <Text className="text12">
-                    Hurry up, you have only <strong> 999 NFTs left to mint!</strong>
+                    Hurry up, there's only <strong> 999 NFTs left to mint!</strong>
                   </Text>
                 </Space>
               </Mint>
             </Col>
             <Col flex="auto">
-              <Pillow />
+              <Pillow overlay={waifuDataUrl || selfieDataUrl} />
             </Col>
           </Row>
         </Content>
@@ -118,21 +120,6 @@ export default function GeneratorHeader() {
     </Layout>
   );
 }
-
-const CustomMenu = styled.div`
-  display: flex;
-  padding-top: 1.2em;
-
-  .wallet {
-    margin-left: auto;
-    margin-top: 1em;
-  }
-  .ant-btn:hover,
-  .ant-btn:focus {
-    color: ${flamingo};
-    border-color: ${flamingo};
-  }
-`;
 
 const Certificate = styled.div`
   text-align: center;
@@ -162,32 +149,6 @@ const Mint = styled.div`
   .ant-switch-checked:focus {
     box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
   }
-`;
-
-const CustomHeader = styled.div`
-  .ant-layout-header {
-    height: 8em;
-    background: white;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  .titleRed {
-    color: ${flamingo};
-  }
-  .ant-divider-vertical {
-    top: 1.3em;
-    height: 1.6em;
-    border-left: 2px solid rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const FixedHeader = styled.div`
-  position: fixed;
-  z-index: 1;
-  width: 100%;
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-  background: white;
 `;
 
 const CustomContent = styled.div`
@@ -241,5 +202,9 @@ const CustomContent = styled.div`
   }
   .flow {
     flex-flow: initial;
+
+    &.blur {
+      filter: blur(10px);
+    }
   }
 `;

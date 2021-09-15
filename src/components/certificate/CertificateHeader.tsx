@@ -1,46 +1,17 @@
 import styled from 'styled-components';
-import { Typography, Layout, Space, Divider, Button, Dropdown, Menu, Image, Row, Col, Card, message } from 'antd';
-import { DownOutlined, LogoutOutlined, LinkOutlined, FilePdfOutlined } from '@ant-design/icons';
+import { Typography, Layout, Space, Button, Image, Row, Col, Card, message } from 'antd';
+import { LinkOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
 import { Pillow } from '../pillow';
+import { AppHeader } from '../shared';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
-
-function handleMenuClick(e: any) {
-  message.info('Click on menu item.');
-  console.log('click', e);
-}
-
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="1" icon={<LogoutOutlined />}>
-      Disconnect
-    </Menu.Item>
-  </Menu>
-);
 
 export default function CertificateHeader() {
   return (
     <Layout>
-      <FixedHeader>
-        <CustomHeader>
-          <Header>
-            <CustomMenu>
-              <Title>Deep</Title>
-              <Title className="titleRed">Waifu</Title>
-              <Divider type="vertical" />
-              <Title>ディープ</Title>
-              <Title className="titleRed">ワイフ</Title>
-              <Dropdown className="wallet" overlay={menu}>
-                <Button>
-                  GKvqs...EJqiV <DownOutlined />
-                </Button>
-              </Dropdown>
-            </CustomMenu>
-          </Header>
-        </CustomHeader>
-      </FixedHeader>
+      <AppHeader />
       <CustomContent id="upload">
         <Content>
           <Row className="mainTitle">
@@ -116,21 +87,6 @@ export default function CertificateHeader() {
   );
 }
 
-const CustomMenu = styled.div`
-  display: flex;
-  padding-top: 1.2em;
-
-  .wallet {
-    margin-left: auto;
-    margin-top: 1em;
-  }
-  .ant-btn:hover,
-  .ant-btn:focus {
-    color: ${flamingo};
-    border-color: ${flamingo};
-  }
-`;
-
 const Overlay = styled.div`
   position: relative;
   top: 0;
@@ -198,32 +154,6 @@ const Mint = styled.div`
   .mintBtn {
     display: block;
   }
-`;
-
-const CustomHeader = styled.div`
-  .ant-layout-header {
-    height: 8em;
-    background: white;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  .titleRed {
-    color: ${flamingo};
-  }
-  .ant-divider-vertical {
-    top: 1.3em;
-    height: 1.6em;
-    border-left: 2px solid rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const FixedHeader = styled.div`
-  position: fixed;
-  z-index: 1;
-  width: 100%;
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-  background: white;
 `;
 
 const CustomContent = styled.div`

@@ -41,7 +41,7 @@ export default function MainContent() {
                 <Title className="titleFeaturesRed">ヽ(*・ω・)ﾉ</Title>
                 <Title className="titleFeatures">Order Pillow</Title>
                 <Image preview={false} src={'../img/pillow.png'} />
-                <Text className="text16">Get your Waifu printed in full color on both sides of a pillar.</Text>
+                <Text className="text16">Get your Waifu printed in full color on both sides of a pillow.</Text>
               </Col>
             </Row>
             <br />
