@@ -28,14 +28,20 @@ export default function MainContent() {
               <Col span={8}>
                 <Title className="titleFeaturesRed">(=^･ω･^=)</Title>
                 <Title className="titleFeatures">Upload Selfie</Title>
-                <Image preview={false} src={'../img/selfie/selfie12.jpg'} />
+                <Image preview={false} src={'../img/selfie/selfie9.jpg'} />
                 <Text className="text16">Let a non-human artist draw your anime-style portrait.</Text>
               </Col>
               <Col span={8}>
                 <Title className="titleFeaturesRed">(´｡• ω •｡`)</Title>
                 <Title className="titleFeatures">Mint NFT</Title>
-                <Image preview={false} src={'../img/waifu/waifu12.png'} />
+                <Image preview={false} src={'../img/waifu/waifu9.png'} />
                 <Text className="text16">Trade exlusive, high-quality NFTs minted on the blockchain.</Text>
+                <div className="solana">
+                  <Text className="text12">Powered by</Text>
+                  <a href="https://solana.com/" target="_blank" rel="noreferrer">
+                    <Image preview={false} src={'../img/solana-logo.svg'} />
+                  </a>
+                </div>
               </Col>
               <Col span={8}>
                 <Title className="titleFeaturesRed">ヽ(*・ω・)ﾉ</Title>
@@ -79,10 +85,10 @@ export default function MainContent() {
             <Text className="text18">Follow us on Twitter and Github to find out more about DeepWaifu.</Text>
           </TextBlock>
           <br />
-          <a href="/">
+          <a href="https://twitter.com/ChronoLogicETH" target="_blank" rel="noreferrer">
             <TwitterCircleFilled className="iconSocial" />
           </a>
-          <a href="/">
+          <a href="https://github.com/chronologic" target="_blank" rel="noreferrer">
             <GithubFilled className="iconSocial" />
           </a>
         </Content>
@@ -142,6 +148,10 @@ const Features = styled.div`
   max-width: 960px;
   background: ${whitesmoke};
 
+  .solana {
+    margin-top: 2em;
+  }
+
   .ant-col-8 {
     padding: 2em 4em;
   }
@@ -154,6 +164,9 @@ const Features = styled.div`
   }
   .text16 {
     font-size: 16px;
+  }
+  .text12 {
+    font-size: 12px;
   }
   .ant-image {
     margin: 1em 0;

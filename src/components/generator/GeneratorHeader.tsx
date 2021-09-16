@@ -101,7 +101,12 @@ export default function GeneratorHeader() {
               </Certificate>
               <Mint>
                 <Space direction="vertical" size="middle">
-                  <Switch checkedChildren="Pay with SOL" unCheckedChildren="Pay with DAY" defaultChecked size="small" />
+                  <div className="switch">
+                    <Space direction="horizontal" size="large">
+                      <Image className="solLogo" height={14} preview={false} src={'../img/solana-logo-red.svg'} />
+                      <Switch checkedChildren="Pay with SOL" unCheckedChildren="Pay with DAY" defaultChecked />
+                    </Space>
+                  </div>
                   <Button type="primary" size="large" danger>
                     Mint DeepWaifu NFT
                   </Button>
@@ -148,6 +153,9 @@ const Mint = styled.div`
   }
   .ant-switch-checked:focus {
     box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
+  }
+  .solLogo {
+    margin-top: 2px;
   }
 `;
 
