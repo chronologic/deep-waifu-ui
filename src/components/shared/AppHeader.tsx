@@ -1,24 +1,11 @@
 import styled from 'styled-components';
-import { Typography, Layout, Divider, Button, Dropdown, Menu, message } from 'antd';
-import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Typography, Layout, Divider } from 'antd';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 import { flamingo } from '../colors';
 
 const { Header } = Layout;
 const { Title } = Typography;
-
-function handleMenuClick(e: any) {
-  message.info('Click on menu item.');
-  console.log('click', e);
-}
-
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="1" icon={<LogoutOutlined />}>
-      Disconnect
-    </Menu.Item>
-  </Menu>
-);
 
 export default function AppHeader() {
   return (
@@ -33,11 +20,7 @@ export default function AppHeader() {
               <Title>ディープ</Title>
               <Title className="titleRed">ワイフ</Title>
             </a>
-            <Dropdown className="wallet" overlay={menu}>
-              <Button>
-                GKvqs...EJqiV <DownOutlined />
-              </Button>
-            </Dropdown>
+            <WalletMultiButton className="walletConnector" />
           </CustomMenu>
         </Header>
       </CustomHeader>
@@ -48,19 +31,16 @@ export default function AppHeader() {
 const CustomMenu = styled.div`
   display: flex;
   padding-top: 1.2em;
+  justify-content: space-between;
 
-  .wallet {
-    margin-left: auto;
-    margin-top: 1em;
+  a.title {
+    display: flex;
   }
+
   .ant-btn:hover,
   .ant-btn:focus {
     color: ${flamingo};
     border-color: ${flamingo};
-  }
-
-  a.title {
-    display: flex;
   }
 `;
 

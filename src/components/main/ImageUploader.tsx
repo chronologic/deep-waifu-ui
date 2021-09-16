@@ -50,7 +50,7 @@ export default function ImageUploader({ onUploadDone }: IProps) {
   const footer = (
     <Footer>
       <Button onClick={handleCancel}>Cancel</Button>
-      <Button type="primary" onClick={handleSubmit}>
+      <Button type="primary" className="crop" onClick={handleSubmit}>
         Crop
       </Button>
     </Footer>

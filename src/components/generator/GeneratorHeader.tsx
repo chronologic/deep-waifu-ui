@@ -5,7 +5,7 @@ import { Typography, Layout, Space, Button, Image, Row, Col, Card, Input, Switch
 
 import { flamingo, whitesmoke } from '../colors';
 import { Pillow } from '../pillow';
-import { useSelfie } from '../../hooks';
+import { usePaymentContract, useSelfie } from '../../hooks';
 import { AppHeader } from '../shared';
 import { fileToDataUrl } from '../../utils';
 
@@ -44,6 +44,12 @@ export default function GeneratorHeader() {
       convertSelfieToDataUrl();
     }
   }, [selfie]);
+
+  const { fetchState } = usePaymentContract();
+
+  useEffect(() => {
+    fetchState().then(console.log);
+  }, [fetchState]);
 
   return (
     <Layout>

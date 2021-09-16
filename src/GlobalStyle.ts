@@ -43,6 +43,20 @@ const GlobalStyle = styled.div`
   .ant-message-loading .anticon {
     color: ${flamingo};
   }
+
+  .ant-btn-primary:not([disabled]) {
+    background: ${flamingo};
+    border-color: ${flamingo};
+  }
+  .ant-btn-primary:not([disabled]):hover,
+  .ant-btn-primary:not([disabled]):focus {
+    color: white;
+  }
+  .ant-btn:hover,
+  .ant-btn:focus {
+    color: ${flamingo};
+    border-color: ${flamingo};
+  }
 `;
 
 export default GlobalStyle;
