@@ -17,7 +17,7 @@ export default function Pillow() {
             <Image width={180} preview={false} src={'../img/pillow-base.png'} />
           </PillowBase>
           <PillowImage>
-            <Image width={180} preview={false} src={'../img/waifu/waifu9.png'} />
+            <Image width={180} preview={false} src={'../img/waifu/waifu14.png'} />
           </PillowImage>
           <Text className="text14">
             Get your DeepWaifu printed on both sides of a 18"x18" pillow in full color. The pillows are soft yet

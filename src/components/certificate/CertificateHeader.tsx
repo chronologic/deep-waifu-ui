@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { Typography, Layout, Space, Divider, Button, Dropdown, Menu, Image, Row, Col, Card, message } from 'antd';
-import { DownOutlined, LogoutOutlined, LinkOutlined, FilePdfOutlined } from '@ant-design/icons';
+import { DownOutlined, LogoutOutlined, FilePdfFilled } from '@ant-design/icons';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
 import { Pillow } from '../pillow';
+
+import sol from '../../img/solana-icon.svg';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -54,7 +56,7 @@ export default function CertificateHeader() {
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
                 <CertificateImage>
-                  <Image width={256} preview={false} src={'../img/waifu/waifu9.png'} />
+                  <Image width={256} preview={false} src={'../img/waifu/waifu14.png'} />
                 </CertificateImage>
                 <TextBlock>
                   <Row className="flow">
@@ -85,7 +87,14 @@ export default function CertificateHeader() {
                 <Space direction="vertical" size="middle">
                   <div className="mintBtn">
                     <Space direction="horizontal" size="large">
-                      <Button danger size="large">
+                      <Button
+                        danger
+                        size="large"
+                        // URL for the puprose of a demo video
+                        href="https://twitter.com/intent/tweet?text=Check%20out%20my%20DeepWaifu!%20%0A%0Ahttps://foundation.app/@Ro_mi_nd/lazy-eye-1-53054"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         Tweet it!
                       </Button>
                       <Button type="primary" size="large" danger>
@@ -95,10 +104,10 @@ export default function CertificateHeader() {
                   </div>
                   <div className="mintBtn">
                     <Space direction="horizontal" size="large">
-                      <Button type="link" danger icon={<LinkOutlined />}>
+                      <Button type="link" danger icon={<img width="14px" className="anticon" src={sol} alt="sol" />}>
                         View on Solanascan
                       </Button>
-                      <Button type="link" danger icon={<FilePdfOutlined />}>
+                      <Button type="link" danger icon={<FilePdfFilled />}>
                         Download PDF
                       </Button>
                     </Space>
