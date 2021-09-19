@@ -3,7 +3,7 @@ import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
 
 import { flamingo, whitesmoke, bluegrey } from '../colors';
-import { Pillow } from '../pillow';
+import { Pillow } from '../shared';
 import { AppHeader } from '../shared';
 import sol from '../../img/solana-icon.svg';
 

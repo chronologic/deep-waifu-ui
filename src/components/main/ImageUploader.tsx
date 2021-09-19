@@ -60,7 +60,7 @@ export default function ImageUploader({ onUploadDone }: IProps) {
     <>
       <Dragger
         name="selfie"
-        accept="image/*"
+        accept="image/jpeg,image/png"
         action=""
         multiple={false}
         showUploadList={false}

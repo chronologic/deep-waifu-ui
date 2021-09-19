@@ -4,10 +4,12 @@ import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card, Input, Switch } from 'antd';
 
 import { flamingo, whitesmoke } from '../colors';
-import { Pillow } from '../pillow';
-import { usePaymentContract, useSelfie } from '../../hooks';
+import { Pillow } from '../shared';
+import { useSelfie } from '../../hooks';
 import { AppHeader } from '../shared';
 import { fileToDataUrl } from '../../utils';
+import NftCounter from './NftCounter';
+import MintButton from './MintButton';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -44,12 +46,6 @@ export default function GeneratorHeader() {
       convertSelfieToDataUrl();
     }
   }, [selfie]);
-
-  const { fetchState } = usePaymentContract();
-
-  useEffect(() => {
-    fetchState().then(console.log);
-  }, [fetchState]);
 
   return (
     <Layout>
@@ -105,22 +101,7 @@ export default function GeneratorHeader() {
                   </Row>
                 </Card>
               </Certificate>
-              <Mint>
-                <Space direction="vertical" size="middle">
-                  <div className="switch">
-                    <Space direction="horizontal" size="large">
-                      <Image className="solLogo" height={14} preview={false} src={'../img/solana-logo-red.svg'} />
-                      <Switch checkedChildren="Pay with SOL" unCheckedChildren="Pay with DAY" defaultChecked />
-                    </Space>
-                  </div>
-                  <Button type="primary" size="large" danger>
-                    Mint DeepWaifu NFT
-                  </Button>
-                  <Text className="text12">
-                    Hurry up, there's only <strong> 999 NFTs left to mint!</strong>
-                  </Text>
-                </Space>
-              </Mint>
+              <MintButton />
             </Col>
             <Col flex="auto">
               <Pillow overlay={waifuDataUrl || selfieDataUrl} />

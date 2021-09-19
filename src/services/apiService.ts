@@ -16,6 +16,21 @@ const api = {
 
     return res;
   },
+  async mint(tx: string, selfie: File, name: string): Promise<void> {
+    const fd = new FormData();
+    fd.append('tx', tx);
+    fd.append('name', name);
+    fd.append('selfie', selfie, 'selfie.jpg');
+
+    const { data } = await client.post(`/mint`, fd, { responseType: 'json' });
+
+    return data;
+  },
+  async mintStatus(tx: string): Promise<void> {
+    const { data } = await client.get(`/mint/${tx}`, { responseType: 'json' });
+
+    return data;
+  },
 };
 
 export default api;
