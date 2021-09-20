@@ -42,6 +42,22 @@ const CustomMenu = styled.div`
     color: ${flamingo};
     border-color: ${flamingo};
   }
+
+  .walletConnector {
+    background-color: white;
+    color: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.85);
+    border-radius: 3px;
+    font-weight: 300;
+
+    &:hover {
+      background-color: white;
+      transition: all 0.2s ease;
+      color: ${flamingo};
+      border-color: ${flamingo};
+      background-image: none;
+    }
+  }
 `;
 
 const CustomHeader = styled.div`
