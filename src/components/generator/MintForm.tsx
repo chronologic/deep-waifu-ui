@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Typography, Space, Button, Image, Row, Col, Card, Input, Switch, Form, message } from 'antd';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import * as anchor from '@project-serum/anchor';
 
 import { flamingo, whitesmoke } from '../colors';
 import { usePaymentContract, useWaifu } from '../../hooks';
@@ -11,6 +12,7 @@ import { fileToDataUrl, sleep } from '../../utils';
 import NftCounter from './NftCounter';
 import { apiService } from '../../services';
 import { SECOND_MILLIS } from '../../constants';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const { Title, Text } = Typography;
 
@@ -26,9 +28,10 @@ export default function MintForm() {
   const [selfieDataUrl, setSelfieDataUrl] = useState<string>();
   const { publicKey, connected } = useWallet();
   const { setVisible } = useWalletModal();
-  const { payForMint } = usePaymentContract();
+  const { payForMint, fetchState } = usePaymentContract();
   const [resumeMint, setResumeMint] = useState(false);
   const [minting, setMinting] = useState(false);
+  const [priceSol, setPriceSol] = useState(0);
 
   const waitForMint = useCallback(async (tx: string): Promise<{ id: number; tx: string }> => {
     return new Promise(async (resolve, reject) => {
@@ -110,6 +113,15 @@ export default function MintForm() {
     }
   }, [selfie]);
 
+  useEffect(() => {
+    async function fetchPrice() {
+      const state = await fetchState();
+      setPriceSol(state.priceLamports.mul(new anchor.BN(100)).div(new anchor.BN(LAMPORTS_PER_SOL)).toNumber() / 100);
+    }
+
+    fetchPrice();
+  }, [fetchState]);
+
   return (
     <Form form={form}>
       <Certificate>
@@ -180,7 +192,7 @@ export default function MintForm() {
           <div className="switch">
             <Space direction="horizontal" size="large">
               <Image className="solLogo" height={14} preview={false} src={'../img/solana-logo-red.svg'} />
-              <Switch checkedChildren="Pay with SOL" unCheckedChildren="Pay with DAY" defaultChecked />
+              <Switch checkedChildren={`Pay ${priceSol} SOL`} unCheckedChildren="Pay with DAY" defaultChecked />
             </Space>
           </div>
           <Button type="primary" size="large" danger disabled={minting} loading={minting} onClick={handleMint}>

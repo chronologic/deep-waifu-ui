@@ -25,7 +25,7 @@ export default function NftCounter() {
   }, [fetchState]);
 
   return (
-    <Text className="text12">
+    <Text className="text14">
       Hurry up, there's only <strong> {itemsLeft} NFTs left to mint!</strong>
     </Text>
   );
