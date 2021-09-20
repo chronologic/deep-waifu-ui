@@ -5,8 +5,14 @@ import { SECOND_MILLIS } from '../constants';
 import { apiService } from '../services';
 import { sleep } from '../utils';
 
-export interface ISelfie {
+export interface IWaifu {
   loading: boolean;
+  name: string;
+  onSetName: (name: string) => void;
+  id: number;
+  onSetId: (id: number) => void;
+  holder: string;
+  onSetHolder: (holder: string) => void;
   selfie: File | undefined;
   onSelfieChange: (file: File) => void;
   waifu: File | undefined;
@@ -17,16 +23,25 @@ interface IProps {
   children: React.ReactNode;
 }
 
-export const SelfieContext = createContext<ISelfie>({
+export const WaifuContext = createContext<IWaifu>({
   loading: false,
   selfie: undefined,
+  name: '',
+  onSetName: () => {},
+  id: 0,
+  onSetId: () => {},
+  holder: '',
+  onSetHolder: () => {},
   onSelfieChange: () => {},
   waifu: undefined,
   onReset: () => {},
 });
 
-export const SelfieProvider: React.FC<IProps> = ({ children }: IProps) => {
+export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [id, setId] = useState(0);
+  const [holder, setHolder] = useState('');
   const [selfie, setSelfie] = useState<File>();
   const [waifu, setWaifu] = useState<File>();
 
@@ -46,14 +61,29 @@ export const SelfieProvider: React.FC<IProps> = ({ children }: IProps) => {
   const handleReset = useCallback(() => {
     setSelfie(undefined);
     setWaifu(undefined);
+    setName('');
+    setId(0);
+    setHolder('');
     setLoading(false);
   }, []);
 
   return (
-    <SelfieContext.Provider
-      value={{ loading, selfie, onSelfieChange: handleSelfieChange, waifu, onReset: handleReset }}
+    <WaifuContext.Provider
+      value={{
+        loading,
+        selfie,
+        name,
+        onSetName: setName,
+        id,
+        onSetId: setId,
+        holder,
+        onSetHolder: setHolder,
+        onSelfieChange: handleSelfieChange,
+        waifu,
+        onReset: handleReset,
+      }}
     >
       {children}
-    </SelfieContext.Provider>
+    </WaifuContext.Provider>
   );
 };

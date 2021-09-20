@@ -4,7 +4,7 @@ import { Layout, Image } from 'antd';
 
 import { flamingo } from '../colors';
 import ImageUploader from './ImageUploader';
-import { useSelfie } from '../../hooks';
+import { useWaifu } from '../../hooks';
 import { useHistory } from 'react-router-dom';
 import { AppHeader } from '../shared';
 
@@ -12,7 +12,7 @@ const { Content } = Layout;
 
 export default function MainHeader() {
   const history = useHistory();
-  const { onSelfieChange } = useSelfie();
+  const { onSelfieChange } = useWaifu();
 
   const handleSelfieUploadDone = useCallback(
     (selfie: File) => {

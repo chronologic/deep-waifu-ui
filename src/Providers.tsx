@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { SelfieProvider } from './contexts';
+import { WaifuProvider } from './contexts';
 import SolanaProviders from './SolanaProviders';
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
 export default function Providers({ children }: IProps) {
   return (
     <SolanaProviders>
-      <SelfieProvider>{children}</SelfieProvider>
+      <WaifuProvider>{children}</WaifuProvider>
     </SolanaProviders>
   );
 }

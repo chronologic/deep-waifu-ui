@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
@@ -6,11 +7,27 @@ import { flamingo, whitesmoke, bluegrey } from '../colors';
 import { Pillow } from '../shared';
 import { AppHeader } from '../shared';
 import sol from '../../img/solana-icon.svg';
+import { useWaifu } from '../../hooks';
+import { fileToDataUrl } from '../../utils';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function CertificateHeader() {
+  const { waifu, id, name, holder } = useWaifu();
+  const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
+
+  useEffect(() => {
+    async function convertWaifuToDataUrl() {
+      const dataUrl = await fileToDataUrl(waifu as File);
+      setWaifuDataUrl(dataUrl);
+    }
+
+    if (waifu) {
+      convertWaifuToDataUrl();
+    }
+  }, [waifu]);
+
   return (
     <Layout>
       <AppHeader />
@@ -27,7 +44,7 @@ export default function CertificateHeader() {
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
                 <CertificateImage>
-                  <Image width={256} preview={false} src={'../img/waifu/waifu14.png'} />
+                  <Image width={256} preview={false} src={waifuDataUrl} />
                 </CertificateImage>
                 <TextBlock>
                   <Row className="flow">
@@ -38,16 +55,16 @@ export default function CertificateHeader() {
                         <Text strong className="text14">
                           Let it be known to all that the holder of the DeepWaifu known by the name of
                         </Text>
-                        <Text className="titleName">Himari</Text>
+                        <Text className="titleName">{name}</Text>
                         <Text strong className="text14">
                           has agreed to provide a loving home for this waifu and promised to keep it safe.
                         </Text>
                         <br />
                         <Text className="text8">
-                          <strong>Token ID:</strong> 0001
+                          <strong>Token ID:</strong> {String(id).padStart(4, '0')}
                         </Text>
                         <Text className="text8">
-                          <strong>Holder:</strong> GKvqsuNcnwWqPzzuhLmGi4rzzh55FhJtGizkhHaEJqiV
+                          <strong>Holder:</strong> {holder}
                         </Text>
                       </Space>
                     </Col>
@@ -87,7 +104,7 @@ export default function CertificateHeader() {
               </Mint>
             </Col>
             <Col flex="auto">
-              <Pillow />
+              <Pillow overlay={waifuDataUrl} />
             </Col>
           </Row>
         </Content>

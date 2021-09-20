@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '../env';
+import { IMintStatus } from '../types';
 
 const client = axios.create({
   baseURL: API_URL,
@@ -26,7 +27,7 @@ const api = {
 
     return data;
   },
-  async mintStatus(tx: string): Promise<void> {
+  async mintStatus(tx: string): Promise<IMintStatus> {
     const { data } = await client.get(`/mint/${tx}`, { responseType: 'json' });
 
     return data;

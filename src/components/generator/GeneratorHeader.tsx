@@ -1,29 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Typography, Layout, Space, Button, Image, Row, Col, Card, Input, Switch } from 'antd';
+import { Typography, Layout, Row, Col } from 'antd';
 
 import { flamingo, whitesmoke } from '../colors';
 import { Pillow } from '../shared';
-import { useSelfie } from '../../hooks';
+import { useWaifu } from '../../hooks';
 import { AppHeader } from '../shared';
 import { fileToDataUrl } from '../../utils';
-import NftCounter from './NftCounter';
-import MintButton from './MintButton';
+import MintForm from './MintForm';
 
 const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function GeneratorHeader() {
-  const history = useHistory();
-  const { loading, selfie, waifu, onReset } = useSelfie();
+  const { loading, selfie, waifu } = useWaifu();
   const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
   const [selfieDataUrl, setSelfieDataUrl] = useState<string>();
-
-  const handleReset = useCallback(() => {
-    onReset();
-    history.push('/');
-  }, [history, onReset]);
 
   useEffect(() => {
     async function convertWaifuToDataUrl() {
@@ -68,40 +60,7 @@ export default function GeneratorHeader() {
           </Row>
           <Row className={loading ? 'flow blur' : 'flow'}>
             <Col flex="640px">
-              <Certificate>
-                <Card hoverable>
-                  <Row className="flow">
-                    <Col>
-                      <CertificateImage>
-                        <Card className="certImage">
-                          <Space direction="vertical" size="large">
-                            <Image width={280} preview={false} src={waifuDataUrl || selfieDataUrl} />
-                            <Button type="link" danger onClick={handleReset}>
-                              Re-upload selfie
-                            </Button>
-                          </Space>
-                        </Card>
-                      </CertificateImage>
-                    </Col>
-                    <Col>
-                      <Space direction="vertical">
-                        <Title className="title30">Certificate of Adoption</Title>
-                        <Text className="titleJumbo">養子縁組証明書</Text>
-                        <Text strong className="text14">
-                          Let it be known to all that the holder of the DeepWaifu known by the name of
-                        </Text>
-                        <Input size="large" placeholder="DeepWaifu’s Name" />
-                        <Text strong className="text14">
-                          has agreed to provide a loving home for this waifu and promised to keep it safe.
-                        </Text>
-                        <Input size="large" placeholder="Your Email" />
-                        <Text className="text12">Your email will be kept private</Text>
-                      </Space>
-                    </Col>
-                  </Row>
-                </Card>
-              </Certificate>
-              <MintButton />
+              <MintForm />
             </Col>
             <Col flex="auto">
               <Pillow overlay={waifuDataUrl || selfieDataUrl} />
@@ -112,39 +71,6 @@ export default function GeneratorHeader() {
     </Layout>
   );
 }
-
-const Certificate = styled.div`
-  text-align: center;
-`;
-
-const CertificateImage = styled.div`
-  .certImage {
-    width: 310px;
-    height: 310px;
-    margin: 0 3em 1em 0;
-  }
-  .ant-card-body {
-    padding: 1em;
-  }
-`;
-
-const Mint = styled.div`
-  text-align: center;
-  margin: 2em 0;
-
-  .ant-switch {
-    background-color: ${flamingo};
-  }
-  .ant-switch-checked {
-    background-color: black;
-  }
-  .ant-switch-checked:focus {
-    box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
-  }
-  .solLogo {
-    margin-top: 2px;
-  }
-`;
 
 const CustomContent = styled.div`
   background: ${whitesmoke};

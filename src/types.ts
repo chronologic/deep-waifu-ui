@@ -7,3 +7,9 @@ export interface IPaymentPda {
   beneficiary: anchor.web3.PublicKey;
   authority: anchor.web3.PublicKey;
 }
+
+export interface IMintStatus {
+  status: string;
+  message: string;
+  id?: number;
+}

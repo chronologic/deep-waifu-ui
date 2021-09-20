@@ -1,1 +1,1 @@
-export * from './Selfie';
+export * from './Waifu';

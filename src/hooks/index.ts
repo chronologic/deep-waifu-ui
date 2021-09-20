@@ -1,2 +1,2 @@
 export * from './usePaymentContract';
-export * from './useSelfie';
+export * from './useWaifu';
