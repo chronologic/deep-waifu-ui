@@ -9,12 +9,13 @@ import { AppHeader } from '../shared';
 import sol from '../../img/solana-icon.svg';
 import { useWaifu } from '../../hooks';
 import { fileToDataUrl } from '../../utils';
+import { SOLANA_ENV } from '../../env';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function CertificateHeader() {
-  const { waifu, id, name, holder } = useWaifu();
+  const { waifu, id, name, holder, tx } = useWaifu();
   const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
 
   useEffect(() => {
@@ -92,8 +93,13 @@ export default function CertificateHeader() {
                   </div>
                   <div className="mintBtn">
                     <Space direction="horizontal" size="large">
-                      <Button type="link" danger icon={<img width="14px" className="anticon" src={sol} alt="sol" />}>
-                        View on Solanascan
+                      <Button
+                        type="link"
+                        danger
+                        icon={<img width="14px" className="anticon" src={sol} alt="sol" />}
+                        href={`https://explorer.solana.com/tx/${tx}?cluster=${SOLANA_ENV}`}
+                      >
+                        View on Solana Explorer
                       </Button>
                       <Button type="link" danger icon={<FilePdfFilled />}>
                         Download PDF

@@ -13,6 +13,8 @@ export interface IWaifu {
   onSetId: (id: number) => void;
   holder: string;
   onSetHolder: (holder: string) => void;
+  tx: string;
+  onSetTx: (tx: string) => void;
   selfie: File | undefined;
   onSelfieChange: (file: File) => void;
   waifu: File | undefined;
@@ -32,6 +34,8 @@ export const WaifuContext = createContext<IWaifu>({
   onSetId: () => {},
   holder: '',
   onSetHolder: () => {},
+  tx: '',
+  onSetTx: () => {},
   onSelfieChange: () => {},
   waifu: undefined,
   onReset: () => {},
@@ -42,6 +46,7 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [name, setName] = useState('');
   const [id, setId] = useState(0);
   const [holder, setHolder] = useState('');
+  const [tx, setTx] = useState('');
   const [selfie, setSelfie] = useState<File>();
   const [waifu, setWaifu] = useState<File>();
 
@@ -78,6 +83,8 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
         onSetId: setId,
         holder,
         onSetHolder: setHolder,
+        tx,
+        onSetTx: setTx,
         onSelfieChange: handleSelfieChange,
         waifu,
         onReset: handleReset,

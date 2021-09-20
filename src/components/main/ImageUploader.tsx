@@ -11,10 +11,11 @@ const { Dragger } = Upload;
 const { Title } = Typography;
 
 interface IProps {
+  disabled: boolean;
   onUploadDone: (selfie: File) => void;
 }
 
-export default function ImageUploader({ onUploadDone }: IProps) {
+export default function ImageUploader({ disabled, onUploadDone }: IProps) {
   const [dataUrl, setDataUrl] = useState<string>();
   const [showCropper, setShowCropper] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -65,6 +66,7 @@ export default function ImageUploader({ onUploadDone }: IProps) {
         multiple={false}
         showUploadList={false}
         customRequest={handleCustomRequest as any}
+        disabled={disabled}
       >
         <p className="ant-upload-drag-icon">
           <CloudUploadOutlined />

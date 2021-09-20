@@ -1,18 +1,22 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Layout, Image } from 'antd';
+import { useHistory } from 'react-router-dom';
 
 import { flamingo } from '../colors';
 import ImageUploader from './ImageUploader';
-import { useWaifu } from '../../hooks';
-import { useHistory } from 'react-router-dom';
+import { usePaymentContract, useWaifu } from '../../hooks';
 import { AppHeader } from '../shared';
+import SoldOut from './SoldOut';
 
 const { Content } = Layout;
 
 export default function MainHeader() {
   const history = useHistory();
   const { onSelfieChange } = useWaifu();
+  const { fetchState } = usePaymentContract();
+  const [ready, setReady] = useState(false);
+  const [soldOut, setSoldOut] = useState(false);
 
   const handleSelfieUploadDone = useCallback(
     (selfie: File) => {
@@ -21,6 +25,18 @@ export default function MainHeader() {
     },
     [history, onSelfieChange]
   );
+
+  useEffect(() => {
+    async function init() {
+      const state = await fetchState();
+      setReady(true);
+      if (state.count >= state.maxCount) {
+        setSoldOut(true);
+      }
+    }
+
+    init();
+  }, [fetchState]);
 
   return (
     <Layout>
@@ -110,7 +126,7 @@ export default function MainHeader() {
                 </div>
               </div>
               <div className="grid-item span-1">
-                <ImageUploader onUploadDone={handleSelfieUploadDone} />
+                {soldOut ? <SoldOut /> : <ImageUploader disabled={!ready} onUploadDone={handleSelfieUploadDone} />}
               </div>
               <div className="grid-item span-2">
                 <div className="selfie">

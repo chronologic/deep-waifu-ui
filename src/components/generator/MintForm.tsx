@@ -21,7 +21,7 @@ const MAX_NAME_LENGTH = 24;
 export default function MintForm() {
   const history = useHistory();
   const [form] = Form.useForm();
-  const { selfie, waifu, onReset, onSetName, onSetHolder, onSetId } = useWaifu();
+  const { selfie, waifu, onReset, onSetName, onSetHolder, onSetId, onSetTx } = useWaifu();
   const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
   const [selfieDataUrl, setSelfieDataUrl] = useState<string>();
   const { publicKey, connected } = useWallet();
@@ -30,16 +30,14 @@ export default function MintForm() {
   const [resumeMint, setResumeMint] = useState(false);
   const [minting, setMinting] = useState(false);
 
-  const waitForMint = useCallback(async (tx: string): Promise<number> => {
+  const waitForMint = useCallback(async (tx: string): Promise<{ id: number; tx: string }> => {
     return new Promise(async (resolve, reject) => {
       try {
         while (true) {
           await sleep(3 * SECOND_MILLIS);
-          console.log('checking mint status...');
           const res = await apiService.mintStatus(tx);
-          console.log(res);
           if (res.status === 'minted') {
-            return resolve(res.id!);
+            return resolve({ id: res.id!, tx: res.tx! });
           } else if (res.status === 'error') {
             return reject(new Error(res.message));
           }
@@ -62,12 +60,11 @@ export default function MintForm() {
 
     try {
       const tx = await payForMint();
-      console.log(tx);
       message.success('Payment successful!');
-      const res = await apiService.mint(tx, waifu!, name);
-      const id = await waitForMint(tx);
-      console.log(res);
-      onSetId(id);
+      await apiService.mint(tx, waifu!, name);
+      const res = await waitForMint(tx);
+      onSetId(res.id);
+      onSetTx(res.tx);
       onSetName(name);
       onSetHolder(publicKey?.toBase58() || '');
       message.success('Your Waifu has been minted!');
