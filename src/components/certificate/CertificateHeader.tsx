@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
@@ -10,26 +9,13 @@ import { Pillow } from '../shared';
 import { AppHeader } from '../shared';
 import sol from '../../img/solana-icon.svg';
 import { useWaifu } from '../../hooks';
-import { fileToDataUrl } from '../../utils';
 import { SOLANA_ENV } from '../../env';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function CertificateHeader() {
-  const { waifu, id, name, holder, tx } = useWaifu();
-  const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
-
-  useEffect(() => {
-    async function convertWaifuToDataUrl() {
-      const dataUrl = await fileToDataUrl(waifu as File);
-      setWaifuDataUrl(dataUrl);
-    }
-
-    if (waifu) {
-      convertWaifuToDataUrl();
-    }
-  }, [waifu]);
+  const { state } = useWaifu();
 
   return (
     <Layout>
@@ -47,7 +33,7 @@ export default function CertificateHeader() {
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
                 <CertificateImage>
-                  <Image width={256} preview={false} src={waifuDataUrl} />
+                  <Image width={256} preview={false} src={state.waifuDataUrl} />
                 </CertificateImage>
                 <TextBlock>
                   <Row className="flow">
@@ -58,16 +44,16 @@ export default function CertificateHeader() {
                         <Text strong className="text14">
                           Let it be known to all that the holder of the DeepWaifu known by the name of
                         </Text>
-                        <Text className="titleName">{name}</Text>
+                        <Text className="titleName">{state.name}</Text>
                         <Text strong className="text14">
                           has agreed to provide a loving home for this waifu and promised to keep it safe.
                         </Text>
                         <br />
                         <Text className="text8">
-                          <strong>Token ID:</strong> {String(id).padStart(4, '0')}
+                          <strong>Token ID:</strong> {String(state.id).padStart(4, '0')}
                         </Text>
                         <Text className="text8">
-                          <strong>Holder:</strong> {holder}
+                          <strong>Holder:</strong> {state.holder}
                         </Text>
                       </Space>
                     </Col>
@@ -99,7 +85,7 @@ export default function CertificateHeader() {
                         type="link"
                         danger
                         icon={<img width="14px" className="anticon" src={sol} alt="sol" />}
-                        href={`https://explorer.solana.com/tx/${tx}?cluster=${SOLANA_ENV}`}
+                        href={`https://explorer.solana.com/tx/${state.tx}?cluster=${SOLANA_ENV}`}
                       >
                         View on Solana Explorer
                       </Button>
@@ -112,7 +98,7 @@ export default function CertificateHeader() {
               </Mint>
             </Col>
             <Col flex="auto">
-              <Pillow overlay={waifuDataUrl} />
+              <Pillow />
             </Col>
           </Row>
         </Content>

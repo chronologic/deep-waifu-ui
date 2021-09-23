@@ -23,9 +23,7 @@ const MAX_NAME_LENGTH = 24;
 export default function MintForm() {
   const history = useHistory();
   const [form] = Form.useForm();
-  const { selfie, waifu, onReset, onSetName, onSetHolder, onSetId, onSetTx } = useWaifu();
-  const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
-  const [selfieDataUrl, setSelfieDataUrl] = useState<string>();
+  const { state, onUpdateState, onResetState } = useWaifu();
   const { publicKey, connected } = useWallet();
   const { setVisible } = useWalletModal();
   const { payForMint, fetchState } = usePaymentContract();
@@ -64,12 +62,16 @@ export default function MintForm() {
     try {
       const tx = await payForMint();
       message.success('Payment successful!');
-      await apiService.mint(tx, waifu!, name);
+      await apiService.mint(tx, state.waifu!, name);
       const res = await waitForMint(tx);
-      onSetId(res.id);
-      onSetTx(res.tx);
-      onSetName(name);
-      onSetHolder(publicKey?.toBase58() || '');
+
+      onUpdateState({
+        id: res.id,
+        tx: res.tx,
+        name,
+        holder: publicKey?.toBase58(),
+      });
+
       message.success('Your Waifu has been minted!');
       history.push('/certificate');
     } catch (e) {
@@ -77,7 +79,7 @@ export default function MintForm() {
     } finally {
       setMinting(false);
     }
-  }, [connected, payForMint, setVisible, waifu]);
+  }, [connected, payForMint, setVisible, state]);
 
   useEffect(() => {
     if (connected && resumeMint) {
@@ -87,31 +89,9 @@ export default function MintForm() {
   }, [connected, handleMint, resumeMint]);
 
   const handleReset = useCallback(() => {
-    onReset();
+    onResetState();
     history.push('/');
-  }, [history, onReset]);
-
-  useEffect(() => {
-    async function convertWaifuToDataUrl() {
-      const dataUrl = await fileToDataUrl(waifu as File);
-      setWaifuDataUrl(dataUrl);
-    }
-
-    if (waifu) {
-      convertWaifuToDataUrl();
-    }
-  }, [waifu]);
-
-  useEffect(() => {
-    async function convertSelfieToDataUrl() {
-      const dataUrl = await fileToDataUrl(selfie as File);
-      setSelfieDataUrl(dataUrl);
-    }
-
-    if (selfie) {
-      convertSelfieToDataUrl();
-    }
-  }, [selfie]);
+  }, [history, onResetState]);
 
   useEffect(() => {
     async function fetchPrice() {
@@ -131,7 +111,7 @@ export default function MintForm() {
               <CertificateImage>
                 <Card className="certImage">
                   <Space direction="vertical" size="large">
-                    <Image width={280} preview={false} src={waifuDataUrl || selfieDataUrl} />
+                    <Image width={280} preview={false} src={state.waifuDataUrl || state.selfieDataUrl} />
                     <Button type="link" danger onClick={handleReset}>
                       Re-upload selfie
                     </Button>

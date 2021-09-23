@@ -1,15 +1,33 @@
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { Typography, Card, Space, Button, Image } from 'antd';
+import { Typography, Card, Space, Button, Image, message } from 'antd';
 
 import { flamingo } from '../colors';
+import { apiService } from '../../services';
+import { useWaifu } from '../../hooks';
+import { sleep } from '../../utils';
 
 const { Title, Text } = Typography;
 
-interface IProps {
-  overlay?: string;
-}
+export default function Pillow() {
+  const { state } = useWaifu();
+  const [loading, setLoading] = useState(false);
+  const handleOrderIntent = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { checkoutUrl } = await apiService.createStripeCheckoutIntent({
+        name: state.name || 'Waifu',
+        image: state.waifu!,
+      });
 
-export default function Pillow({ overlay }: IProps) {
+      window.open(checkoutUrl, '_blank');
+    } catch (e) {
+      message.error('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, [state]);
+
   return (
     <PillowMockup>
       <Card bordered={false}>
@@ -21,19 +39,19 @@ export default function Pillow({ overlay }: IProps) {
           <PillowBase>
             <Image width={180} preview={false} src={'../img/pillow-base.png'} />
           </PillowBase>
-          {overlay && (
-            <PillowImage>
-              <Image width={180} preview={false} src={overlay} />
-            </PillowImage>
-          )}
+          <PillowImage>
+            <Image width={180} preview={false} src={state.waifuDataUrl || state.selfieDataUrl} />
+          </PillowImage>
           <Text className="text14">
             Get your DeepWaifu printed on both sides of a 18"x18" pillow in full color. The pillows are soft yet
             durable, made from 100% spun polyester poplin fabric.
           </Text>
           <Text strong className="text14">
-            Free shipment to USA, Canada, Japan
+            Free shipment to Europe, USA, Canada, Japan
           </Text>
-          <Button size="large">Order a pillow for $90!</Button>
+          <Button size="large" loading={loading} onClick={handleOrderIntent}>
+            Order a pillow for $90!
+          </Button>
         </Space>
       </Card>
     </PillowMockup>

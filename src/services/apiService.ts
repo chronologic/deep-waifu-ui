@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '../env';
-import { IMintStatus } from '../types';
+import { IMintStatus, IStripeCheckoutIntent } from '../types';
 
 const client = axios.create({
   baseURL: API_URL,
@@ -29,6 +29,15 @@ const api = {
   },
   async mintStatus(tx: string): Promise<IMintStatus> {
     const { data } = await client.get(`/mint/${tx}`, { responseType: 'json' });
+
+    return data;
+  },
+  async createStripeCheckoutIntent({ name, image }: { name: string; image: File }): Promise<IStripeCheckoutIntent> {
+    const fd = new FormData();
+    fd.append('name', name);
+    fd.append('image', image, 'image.png');
+
+    const { data } = await client.post(`/checkoutIntent`, fd, { responseType: 'json' });
 
     return data;
   },

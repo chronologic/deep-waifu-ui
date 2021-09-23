@@ -13,17 +13,20 @@ const { Content } = Layout;
 
 export default function MainHeader() {
   const history = useHistory();
-  const { onSelfieChange } = useWaifu();
+  const { onUpdateState, onResetState } = useWaifu();
   const { fetchState } = usePaymentContract();
   const [ready, setReady] = useState(false);
   const [soldOut, setSoldOut] = useState(false);
 
   const handleSelfieUploadDone = useCallback(
     (selfie: File) => {
-      onSelfieChange(selfie);
+      onResetState();
+      onUpdateState({
+        selfie,
+      });
       history.push('/generator');
     },
-    [history, onSelfieChange]
+    [history, onUpdateState, onResetState]
   );
 
   useEffect(() => {
