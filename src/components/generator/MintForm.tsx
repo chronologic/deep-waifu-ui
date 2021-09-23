@@ -5,14 +5,14 @@ import { Typography, Space, Button, Image, Row, Col, Card, Input, Switch, Form, 
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import * as anchor from '@project-serum/anchor';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
-import { flamingo, whitesmoke } from '../colors';
 import { usePaymentContract, useWaifu } from '../../hooks';
 import { sleep } from '../../utils';
-import NftCounter from './NftCounter';
 import { apiService } from '../../services';
 import { SECOND_MILLIS } from '../../constants';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { flamingo } from '../colors';
+import NftCounter from './NftCounter';
 
 const { Title, Text } = Typography;
 
@@ -79,7 +79,7 @@ export default function MintForm() {
     } finally {
       setMinting(false);
     }
-  }, [connected, payForMint, setVisible, state]);
+  }, [connected, form, history, onUpdateState, payForMint, publicKey, setVisible, state.waifu, waitForMint]);
 
   useEffect(() => {
     if (connected && resumeMint) {
@@ -197,82 +197,6 @@ const CertificateImage = styled.div`
   }
   .ant-card-body {
     padding: 1em;
-  }
-`;
-
-const Mint = styled.div`
-  text-align: center;
-  margin: 2em 0;
-
-  .ant-switch {
-    background-color: ${flamingo};
-  }
-  .ant-switch-checked {
-    background-color: black;
-  }
-  .ant-switch-checked:focus {
-    box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
-  }
-  .solLogo {
-    margin-top: 2px;
-  }
-`;
-
-const CustomContent = styled.div`
-  background: ${whitesmoke};
-
-  .ant-layout-content {
-    max-width: 960px;
-    margin: 8em auto 0 auto;
-    padding: 0 10px;
-  }
-  .ant-input:hover,
-  .ant-input:focus,
-  .ant-input-focused {
-    border-color: ${flamingo};
-    box-shadow: 0 0 0 2px rgb(235 87 87 / 20%);
-  }
-
-  .mainTitle {
-    display: flex;
-    padding: 1em 0 2em;
-  }
-
-  .titleFeaturesRed {
-    font-size: 16px;
-    color: ${flamingo};
-  }
-  .titleFeatures {
-    font-size: 16px;
-  }
-  .titleRed {
-    color: ${flamingo};
-  }
-  .title30 {
-    font-size: 30px;
-    margin: 0px;
-    margin-top: 0px !important;
-  }
-  .titleJumbo {
-    font-family: Hachi Maru Pop;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 36px;
-    color: ${flamingo};
-  }
-  .text14 {
-    font-size: 14px;
-  }
-  .text12 {
-    font-size: 12px;
-  }
-  .flow {
-    flex-flow: initial;
-
-    &.blur {
-      filter: blur(10px);
-    }
   }
 `;
 
