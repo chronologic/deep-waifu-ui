@@ -1,21 +1,23 @@
+import { useCallback } from 'react';
 import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
 import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
 
-import { flamingo, whitesmoke, bluegrey } from '../colors';
-import { Pillow } from '../shared';
-import { AppHeader } from '../shared';
-import sol from '../../img/solana-icon.svg';
-import { useWaifu } from '../../hooks';
 import { SOLANA_ENV } from '../../env';
+import { useWaifu } from '../../hooks';
+import sol from '../../img/solana-icon.svg';
+import { flamingo, whitesmoke, bluegrey } from '../colors';
+import { AppHeader, Pillow } from '../shared';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function CertificateHeader() {
   const { state } = useWaifu();
+
+  const handlePrintPDF = useCallback(() => printPDF(state.name), [state.name]);
 
   return (
     <Layout>
@@ -89,7 +91,7 @@ export default function CertificateHeader() {
                       >
                         View on Solana Explorer
                       </Button>
-                      <Button id="print" onClick={printPDF} type="link" danger icon={<FilePdfFilled />}>
+                      <Button id="print" onClick={handlePrintPDF} type="link" danger icon={<FilePdfFilled />}>
                         Download PDF
                       </Button>
                     </Space>
@@ -107,20 +109,18 @@ export default function CertificateHeader() {
   );
 }
 
-function printPDF() {
-  html2canvas(document.getElementById('certificate')!, {
-    onclone: (document: Document) => {
-      document.getElementById('print')!.style.visibility = 'hidden';
-    },
-  }).then((canvas: HTMLCanvasElement) => {
+function printPDF(name: string) {
+  html2canvas(document.getElementById('certificate')!, { allowTaint: true }).then((canvas: HTMLCanvasElement) => {
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPdf({
       orientation: 'landscape',
+      unit: 'px',
+      format: [640, 451],
     });
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`${new Date().toISOString()}.pdf`);
+    pdf.save(`certificate_of_adoption_${name}_${new Date().toISOString()}.pdf`);
   });
 }
 
