@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
+import html2canvas from 'html2canvas';
+import jsPdf from 'jspdf';
 
 import { flamingo, whitesmoke, bluegrey } from '../colors';
 import { Pillow } from '../shared';
@@ -40,7 +42,7 @@ export default function CertificateHeader() {
           </Row>
           <Row className="flow">
             <Col flex="640px">
-              <Overlay>
+              <Overlay id="certificate">
                 <Certificate>
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
@@ -101,7 +103,7 @@ export default function CertificateHeader() {
                       >
                         View on Solana Explorer
                       </Button>
-                      <Button type="link" danger icon={<FilePdfFilled />}>
+                      <Button id="print" onClick={printPDF} type="link" danger icon={<FilePdfFilled />}>
                         Download PDF
                       </Button>
                     </Space>
@@ -117,6 +119,23 @@ export default function CertificateHeader() {
       </CustomContent>
     </Layout>
   );
+}
+
+function printPDF() {
+  html2canvas(document.getElementById('certificate')!, {
+    onclone: (document: Document) => {
+      document.getElementById('print')!.style.visibility = 'hidden';
+    },
+  }).then((canvas: HTMLCanvasElement) => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPdf({
+      orientation: 'landscape',
+    });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${new Date().toISOString()}.pdf`);
+  });
 }
 
 const Overlay = styled.div`
