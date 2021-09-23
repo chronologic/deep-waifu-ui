@@ -1,96 +1,121 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { message } from 'antd';
 
 import { SECOND_MILLIS } from '../constants';
 import { apiService } from '../services';
-import { sleep } from '../utils';
+import { fileToDataUrl, sleep, srcToFile } from '../utils';
 
-export interface IWaifu {
-  loading: boolean;
+const STATE_STORAGE_KEY = 'waifu-state';
+
+export interface IWaifuSerializableState {
   name: string;
-  onSetName: (name: string) => void;
   id: number;
-  onSetId: (id: number) => void;
   holder: string;
-  onSetHolder: (holder: string) => void;
   tx: string;
-  onSetTx: (tx: string) => void;
+  selfieDataUrl: string;
+  waifuDataUrl: string;
+}
+
+export interface IWaifuState extends IWaifuSerializableState {
   selfie: File | undefined;
-  onSelfieChange: (file: File) => void;
   waifu: File | undefined;
-  onReset: () => void;
+}
+
+export interface IWaifuContext {
+  state: IWaifuState;
+  onUpdateState: (state: Partial<IWaifuState>) => void;
+  onResetState: () => void;
 }
 
 interface IProps {
   children: React.ReactNode;
 }
 
-export const WaifuContext = createContext<IWaifu>({
-  loading: false,
-  selfie: undefined,
-  name: '',
-  onSetName: () => {},
-  id: 0,
-  onSetId: () => {},
-  holder: '',
-  onSetHolder: () => {},
-  tx: '',
-  onSetTx: () => {},
-  onSelfieChange: () => {},
-  waifu: undefined,
-  onReset: () => {},
+export const WaifuContext = createContext<IWaifuContext>({
+  state: {} as any,
+  onUpdateState: () => {},
+  onResetState: () => {},
 });
 
-export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
-  const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [id, setId] = useState(0);
-  const [holder, setHolder] = useState('');
-  const [tx, setTx] = useState('');
-  const [selfie, setSelfie] = useState<File>();
-  const [waifu, setWaifu] = useState<File>();
+const initialState = readState();
 
-  const handleSelfieChange = useCallback(async (file: File) => {
-    setSelfie(file);
-    setLoading(true);
-    try {
-      const [res] = await Promise.all([apiService.selfie2anime(file), sleep(3 * SECOND_MILLIS)]);
-      setWaifu(res);
-    } catch (e) {
-      message.error((e as any).message || 'Unknown error. Please try again');
-    } finally {
-      setLoading(false);
-    }
+export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
+  const [initialized, setInitialized] = useState(false);
+  const [waifuState, setWaifuState] = useState<IWaifuState>(initialState as any);
+
+  const persistState = useCallback((newState: IWaifuState) => {
+    setWaifuState(newState);
+    storeState(newState);
   }, []);
 
-  const handleReset = useCallback(() => {
-    setSelfie(undefined);
-    setWaifu(undefined);
-    setName('');
-    setId(0);
-    setHolder('');
-    setLoading(false);
+  const handleResetState = useCallback(() => {
+    persistState({} as any);
+  }, []);
+
+  const handleUpdateState = useCallback(
+    async (state: Partial<IWaifuState>) => {
+      const newState = { ...state };
+
+      if (newState.waifu) {
+        newState.waifuDataUrl = await fileToDataUrl(newState.waifu);
+      } else if (newState.waifuDataUrl) {
+        newState.waifu = await srcToFile(newState.waifuDataUrl, 'waifu.png', 'image/png');
+      }
+
+      if (newState.selfie) {
+        newState.selfieDataUrl = await fileToDataUrl(newState.selfie);
+        persistState({ ...waifuState, ...newState });
+        try {
+          const [res] = await Promise.all([apiService.selfie2anime(newState.selfie), sleep(3 * SECOND_MILLIS)]);
+          newState.waifu = res;
+          newState.waifuDataUrl = await fileToDataUrl(res);
+        } catch (e) {
+          message.error((e as any).message || 'Unknown error. Please try again');
+        }
+      } else if (newState.selfieDataUrl) {
+        newState.selfie = await srcToFile(newState.selfieDataUrl, 'selfie.jpg', 'image/jpeg');
+      }
+
+      const updatedState = { ...waifuState, ...newState };
+
+      persistState(updatedState);
+    },
+    [waifuState, persistState]
+  );
+
+  useEffect(() => {
+    async function init() {
+      await handleUpdateState(initialState as IWaifuState);
+      setInitialized(true);
+    }
+
+    init();
   }, []);
 
   return (
     <WaifuContext.Provider
       value={{
-        loading,
-        selfie,
-        name,
-        onSetName: setName,
-        id,
-        onSetId: setId,
-        holder,
-        onSetHolder: setHolder,
-        tx,
-        onSetTx: setTx,
-        onSelfieChange: handleSelfieChange,
-        waifu,
-        onReset: handleReset,
+        state: waifuState,
+        onUpdateState: handleUpdateState,
+        onResetState: handleResetState,
       }}
     >
-      {children}
+      {initialized && children}
     </WaifuContext.Provider>
   );
 };
+
+function storeState(state: IWaifuState) {
+  localStorage.setItem(
+    STATE_STORAGE_KEY,
+    JSON.stringify({
+      ...state,
+      waifu: undefined,
+      selfie: undefined,
+    })
+  );
+}
+
+function readState(): IWaifuSerializableState {
+  return JSON.parse(localStorage.getItem(STATE_STORAGE_KEY) || '{}');
+}

@@ -14,3 +14,8 @@ export interface IMintStatus {
   id?: number;
   tx?: string;
 }
+
+export interface IStripeCheckoutIntent {
+  sessionId: string;
+  checkoutUrl: string;
+}
