@@ -50,7 +50,7 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
 
   const handleResetState = useCallback(() => {
     persistState({} as any);
-  }, []);
+  }, [persistState]);
 
   const handleUpdateState = useCallback(
     async (state: Partial<IWaifuState>) => {
@@ -90,6 +90,7 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
     }
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

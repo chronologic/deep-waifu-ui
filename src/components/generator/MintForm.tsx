@@ -8,7 +8,7 @@ import * as anchor from '@project-serum/anchor';
 
 import { flamingo, whitesmoke } from '../colors';
 import { usePaymentContract, useWaifu } from '../../hooks';
-import { fileToDataUrl, sleep } from '../../utils';
+import { sleep } from '../../utils';
 import NftCounter from './NftCounter';
 import { apiService } from '../../services';
 import { SECOND_MILLIS } from '../../constants';
@@ -50,7 +50,7 @@ export default function MintForm() {
   }, []);
 
   const handleMint = useCallback(async () => {
-    const { name, email } = await form.validateFields();
+    const { name } = await form.validateFields();
 
     if (!connected) {
       setResumeMint(true);

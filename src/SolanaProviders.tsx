@@ -28,13 +28,13 @@ export default function SolanaProviders({ children }: IProps) {
     () => [
       getPhantomWallet(),
       getSolflareWallet(),
-      // getSolletWallet({ network }),
-      // getSolletExtensionWallet({ network }),
-      // getSlopeWallet(),
+      getSolletWallet({ network }),
+      getSolletExtensionWallet({ network }),
+      getSlopeWallet(),
       // getTorusWallet({
       //   options: { clientId: 'Get a client ID @ https://developer.tor.us' },
       // }),
-      // getLedgerWallet(),
+      getLedgerWallet(),
     ],
     [network]
   );

@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import { Typography, Layout, Divider } from 'antd';
+import { Typography } from 'antd';
 
 import { flamingo } from '../colors';
 
-const { Footer } = Layout;
 const { Text, Title } = Typography;
 
 export default function SoldOut() {
