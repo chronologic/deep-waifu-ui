@@ -6,8 +6,28 @@ import { Pillow } from '../pillow';
 
 import sol from '../../img/solana-icon.svg';
 
+import html2canvas from 'html2canvas';
+import jsPdf from 'jspdf';
+
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
+
+const printPDF = () => {
+  html2canvas(document.getElementById('certificate')!, {
+    onclone: (document) => {
+      document.getElementById('print')!.style.visibility = 'hidden';
+    },
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPdf({
+      orientation: 'landscape',
+    });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${new Date().toISOString()}.pdf`);
+  });
+};
 
 function handleMenuClick(e: any) {
   message.info('Click on menu item.');
@@ -51,7 +71,7 @@ export default function CertificateHeader() {
           </Row>
           <Row className="flow">
             <Col flex="640px">
-              <Overlay>
+              <Overlay id="certificate">
                 <Certificate>
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
@@ -107,7 +127,7 @@ export default function CertificateHeader() {
                       <Button type="link" danger icon={<img width="14px" className="anticon" src={sol} alt="sol" />}>
                         View on Solanascan
                       </Button>
-                      <Button type="link" danger icon={<FilePdfFilled />}>
+                      <Button id="print" onClick={printPDF} type="link" danger icon={<FilePdfFilled />}>
                         Download PDF
                       </Button>
                     </Space>
