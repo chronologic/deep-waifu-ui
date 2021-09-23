@@ -16,23 +16,6 @@ import { SOLANA_ENV } from '../../env';
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-const printPDF = () => {
-  html2canvas(document.getElementById('certificate')!, {
-    onclone: (document: Document) => {
-      document.getElementById('print')!.style.visibility = 'hidden';
-    },
-  }).then((canvas: HTMLCanvasElement) => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPdf({
-      orientation: 'landscape',
-    });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`${new Date().toISOString()}.pdf`);
-  });
-};
-
 export default function CertificateHeader() {
   const { waifu, id, name, holder, tx } = useWaifu();
   const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
@@ -136,6 +119,23 @@ export default function CertificateHeader() {
       </CustomContent>
     </Layout>
   );
+}
+
+function printPDF() {
+  html2canvas(document.getElementById('certificate')!, {
+    onclone: (document: Document) => {
+      document.getElementById('print')!.style.visibility = 'hidden';
+    },
+  }).then((canvas: HTMLCanvasElement) => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPdf({
+      orientation: 'landscape',
+    });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${new Date().toISOString()}.pdf`);
+  });
 }
 
 const Overlay = styled.div`
