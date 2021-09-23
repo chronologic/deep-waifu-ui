@@ -1,10 +1,15 @@
 import styled from 'styled-components';
 import { Typography, Card, Space, Button, Image } from 'antd';
+
 import { flamingo } from '../colors';
 
 const { Title, Text } = Typography;
 
-export default function Pillow() {
+interface IProps {
+  overlay?: string;
+}
+
+export default function Pillow({ overlay }: IProps) {
   return (
     <PillowMockup>
       <Card bordered={false}>
@@ -16,9 +21,11 @@ export default function Pillow() {
           <PillowBase>
             <Image width={180} preview={false} src={'../img/pillow-base.png'} />
           </PillowBase>
-          <PillowImage>
-            <Image width={180} preview={false} src={'../img/waifu/waifu14.png'} />
-          </PillowImage>
+          {overlay && (
+            <PillowImage>
+              <Image width={180} preview={false} src={overlay} />
+            </PillowImage>
+          )}
           <Text className="text14">
             Get your DeepWaifu printed on both sides of a 18"x18" pillow in full color. The pillows are soft yet
             durable, made from 100% spun polyester poplin fabric.

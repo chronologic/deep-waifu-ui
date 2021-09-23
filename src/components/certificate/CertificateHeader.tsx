@@ -1,23 +1,27 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Typography, Layout, Space, Divider, Button, Dropdown, Menu, Image, Row, Col, Card, message } from 'antd';
-import { DownOutlined, LogoutOutlined, FilePdfFilled } from '@ant-design/icons';
-import { flamingo, whitesmoke, bluegrey } from '../colors';
-import { Pillow } from '../pillow';
-
-import sol from '../../img/solana-icon.svg';
-
+import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
+import { FilePdfFilled } from '@ant-design/icons';
 import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
 
-const { Header, Content } = Layout;
+import { flamingo, whitesmoke, bluegrey } from '../colors';
+import { Pillow } from '../shared';
+import { AppHeader } from '../shared';
+import sol from '../../img/solana-icon.svg';
+import { useWaifu } from '../../hooks';
+import { fileToDataUrl } from '../../utils';
+import { SOLANA_ENV } from '../../env';
+
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const printPDF = () => {
   html2canvas(document.getElementById('certificate')!, {
-    onclone: (document) => {
+    onclone: (document: Document) => {
       document.getElementById('print')!.style.visibility = 'hidden';
     },
-  }).then((canvas) => {
+  }).then((canvas: HTMLCanvasElement) => {
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPdf({
       orientation: 'landscape',
@@ -29,40 +33,24 @@ const printPDF = () => {
   });
 };
 
-function handleMenuClick(e: any) {
-  message.info('Click on menu item.');
-  console.log('click', e);
-}
-
-const menu = (
-  <Menu onClick={handleMenuClick}>
-    <Menu.Item key="1" icon={<LogoutOutlined />}>
-      Disconnect
-    </Menu.Item>
-  </Menu>
-);
-
 export default function CertificateHeader() {
+  const { waifu, id, name, holder, tx } = useWaifu();
+  const [waifuDataUrl, setWaifuDataUrl] = useState<string>();
+
+  useEffect(() => {
+    async function convertWaifuToDataUrl() {
+      const dataUrl = await fileToDataUrl(waifu as File);
+      setWaifuDataUrl(dataUrl);
+    }
+
+    if (waifu) {
+      convertWaifuToDataUrl();
+    }
+  }, [waifu]);
+
   return (
     <Layout>
-      <FixedHeader>
-        <CustomHeader>
-          <Header>
-            <CustomMenu>
-              <Title>Deep</Title>
-              <Title className="titleRed">Waifu</Title>
-              <Divider type="vertical" />
-              <Title>ディープ</Title>
-              <Title className="titleRed">ワイフ</Title>
-              <Dropdown className="wallet" overlay={menu}>
-                <Button>
-                  GKvqs...EJqiV <DownOutlined />
-                </Button>
-              </Dropdown>
-            </CustomMenu>
-          </Header>
-        </CustomHeader>
-      </FixedHeader>
+      <AppHeader />
       <CustomContent id="upload">
         <Content>
           <Row className="mainTitle">
@@ -76,7 +64,7 @@ export default function CertificateHeader() {
                   <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
                 </Certificate>
                 <CertificateImage>
-                  <Image width={256} preview={false} src={'../img/waifu/waifu14.png'} />
+                  <Image width={256} preview={false} src={waifuDataUrl} />
                 </CertificateImage>
                 <TextBlock>
                   <Row className="flow">
@@ -87,16 +75,16 @@ export default function CertificateHeader() {
                         <Text strong className="text14">
                           Let it be known to all that the holder of the DeepWaifu known by the name of
                         </Text>
-                        <Text className="titleName">Himari</Text>
+                        <Text className="titleName">{name}</Text>
                         <Text strong className="text14">
                           has agreed to provide a loving home for this waifu and promised to keep it safe.
                         </Text>
                         <br />
                         <Text className="text8">
-                          <strong>Token ID:</strong> 0001
+                          <strong>Token ID:</strong> {String(id).padStart(4, '0')}
                         </Text>
                         <Text className="text8">
-                          <strong>Holder:</strong> GKvqsuNcnwWqPzzuhLmGi4rzzh55FhJtGizkhHaEJqiV
+                          <strong>Holder:</strong> {holder}
                         </Text>
                       </Space>
                     </Col>
@@ -124,8 +112,13 @@ export default function CertificateHeader() {
                   </div>
                   <div className="mintBtn">
                     <Space direction="horizontal" size="large">
-                      <Button type="link" danger icon={<img width="14px" className="anticon" src={sol} alt="sol" />}>
-                        View on Solanascan
+                      <Button
+                        type="link"
+                        danger
+                        icon={<img width="14px" className="anticon" src={sol} alt="sol" />}
+                        href={`https://explorer.solana.com/tx/${tx}?cluster=${SOLANA_ENV}`}
+                      >
+                        View on Solana Explorer
                       </Button>
                       <Button id="print" onClick={printPDF} type="link" danger icon={<FilePdfFilled />}>
                         Download PDF
@@ -136,7 +129,7 @@ export default function CertificateHeader() {
               </Mint>
             </Col>
             <Col flex="auto">
-              <Pillow />
+              <Pillow overlay={waifuDataUrl} />
             </Col>
           </Row>
         </Content>
@@ -144,21 +137,6 @@ export default function CertificateHeader() {
     </Layout>
   );
 }
-
-const CustomMenu = styled.div`
-  display: flex;
-  padding-top: 1.2em;
-
-  .wallet {
-    margin-left: auto;
-    margin-top: 1em;
-  }
-  .ant-btn:hover,
-  .ant-btn:focus {
-    color: ${flamingo};
-    border-color: ${flamingo};
-  }
-`;
 
 const Overlay = styled.div`
   position: relative;
@@ -227,32 +205,6 @@ const Mint = styled.div`
   .mintBtn {
     display: block;
   }
-`;
-
-const CustomHeader = styled.div`
-  .ant-layout-header {
-    height: 8em;
-    background: white;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  .titleRed {
-    color: ${flamingo};
-  }
-  .ant-divider-vertical {
-    top: 1.3em;
-    height: 1.6em;
-    border-left: 2px solid rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const FixedHeader = styled.div`
-  position: fixed;
-  z-index: 1;
-  width: 100%;
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-  background: white;
 `;
 
 const CustomContent = styled.div`
