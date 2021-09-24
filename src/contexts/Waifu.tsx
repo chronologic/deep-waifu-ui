@@ -14,6 +14,8 @@ export interface IWaifuSerializableState {
   tx: string;
   selfieDataUrl: string;
   waifuDataUrl: string;
+  metadataLink: string;
+  certificateLink: string;
 }
 
 export interface IWaifuState extends IWaifuSerializableState {

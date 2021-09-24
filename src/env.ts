@@ -1,6 +1,7 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 
 export const API_URL = process.env.REACT_APP_API_URL as string;
+export const SHARE_URL = process.env.REACT_APP_SHARE_URL as string;
 
 export const SOLANA_ENV = process.env.REACT_APP_SOLANA_ENV as WalletAdapterNetwork;
 

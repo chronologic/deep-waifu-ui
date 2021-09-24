@@ -1,11 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
 import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
 
-import { SOLANA_ENV } from '../../env';
+import { SHARE_URL, SOLANA_ENV } from '../../env';
 import { useWaifu } from '../../hooks';
 import sol from '../../img/solana-icon.svg';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
@@ -19,6 +19,11 @@ export default function CertificateHeader() {
   const { state } = useWaifu();
 
   const handlePrintPDF = useCallback(() => printPDF(state.name), [state.name]);
+
+  const tweetUrl = useMemo(() => {
+    const certId = state.certificateLink?.split('/').reverse()[0];
+    return `https://twitter.com/intent/tweet?text=Check%20out%20my%20%23DeepWaifu!%20%0A%0A${SHARE_URL}/c/${certId}`;
+  }, [state.certificateLink]);
 
   return (
     <Layout>
@@ -67,14 +72,7 @@ export default function CertificateHeader() {
                 <Space direction="vertical" size="middle">
                   <div className="mintBtn">
                     <Space direction="horizontal" size="large">
-                      <Button
-                        danger
-                        size="large"
-                        // URL for the puprose of a demo video
-                        href="https://twitter.com/intent/tweet?text=Check%20out%20my%20DeepWaifu!%20%0A%0Ahttps://foundation.app/@Ro_mi_nd/lazy-eye-1-53054"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <Button danger size="large" href={tweetUrl} target="_blank" rel="noreferrer">
                         Tweet it!
                       </Button>
                       <Button type="primary" size="large" danger>

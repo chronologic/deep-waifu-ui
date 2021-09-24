@@ -13,6 +13,7 @@ import { apiService } from '../../services';
 import { SECOND_MILLIS } from '../../constants';
 import { flamingo } from '../colors';
 import NftCounter from './NftCounter';
+import { IMintStatus } from '../../types';
 
 const { Title, Text } = Typography;
 
@@ -31,14 +32,14 @@ export default function MintForm() {
   const [minting, setMinting] = useState(false);
   const [priceSol, setPriceSol] = useState(0);
 
-  const waitForMint = useCallback(async (tx: string): Promise<{ id: number; tx: string }> => {
+  const waitForMint = useCallback(async (tx: string): Promise<IMintStatus> => {
     return new Promise(async (resolve, reject) => {
       try {
         while (true) {
           await sleep(3 * SECOND_MILLIS);
           const res = await apiService.mintStatus(tx);
           if (res.status === 'minted') {
-            return resolve({ id: res.id!, tx: res.tx! });
+            return resolve(res);
           } else if (res.status === 'error') {
             return reject(new Error(res.message));
           }
@@ -68,6 +69,8 @@ export default function MintForm() {
       onUpdateState({
         id: res.id,
         tx: res.tx,
+        metadataLink: res.metadataLink,
+        certificateLink: res.certificateLink,
         name,
         holder: publicKey?.toBase58(),
       });

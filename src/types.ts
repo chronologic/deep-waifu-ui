@@ -13,6 +13,8 @@ export interface IMintStatus {
   message: string;
   id?: number;
   tx?: string;
+  metadataLink?: string;
+  certificateLink?: string;
 }
 
 export interface IStripeCheckoutIntent {
