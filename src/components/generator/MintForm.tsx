@@ -8,14 +8,21 @@ import * as anchor from '@project-serum/anchor';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 import { usePaymentContract, useWaifu } from '../../hooks';
-import { sleep } from '../../utils';
+import { fileToDataUrl, htmlToDataUrl, sleep, srcToFile } from '../../utils';
 import { apiService } from '../../services';
 import { SECOND_MILLIS } from '../../constants';
-import { flamingo } from '../colors';
-import NftCounter from './NftCounter';
 import { IMintStatus } from '../../types';
+import { flamingo } from '../colors';
+import { Certificate } from '../certificate';
+import NftCounter from './NftCounter';
 
 const { Title, Text } = Typography;
+
+interface ICertificateParams {
+  id: number;
+  name: string;
+  holder: string;
+}
 
 const emailRegex =
   /^([a-zA-Z0-9_\-+.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9-]+\.)+))([a-zA-Z]{2,10}|[0-9]{1,3})(\]?)$/i;
@@ -31,6 +38,7 @@ export default function MintForm() {
   const [resumeMint, setResumeMint] = useState(false);
   const [minting, setMinting] = useState(false);
   const [priceSol, setPriceSol] = useState(0);
+  const [certificateParams, setCertificateParams] = useState<ICertificateParams>({} as any);
 
   const waitForMint = useCallback(async (tx: string): Promise<IMintStatus> => {
     return new Promise(async (resolve, reject) => {
@@ -50,6 +58,14 @@ export default function MintForm() {
     });
   }, []);
 
+  const getCertificateFile = useCallback(async (params: ICertificateParams) => {
+    setCertificateParams(params);
+    await sleep(100); // give time to rerender
+    const dataUrl = await htmlToDataUrl('#certificate');
+
+    return srcToFile(dataUrl, 'certificate.png', 'image/png');
+  }, []);
+
   const handleMint = useCallback(async () => {
     const { name } = await form.validateFields();
 
@@ -61,9 +77,10 @@ export default function MintForm() {
     setMinting(true);
 
     try {
-      const tx = await payForMint();
+      const { tx, payer, id } = await payForMint();
       message.success('Payment successful!');
-      await apiService.mint(tx, state.waifu!, name);
+      const certificate = await getCertificateFile({ id, name, holder: payer });
+      await apiService.mint({ tx, waifu: state.waifu!, certificate, name });
       const res = await waitForMint(tx);
 
       onUpdateState({
@@ -82,7 +99,18 @@ export default function MintForm() {
     } finally {
       setMinting(false);
     }
-  }, [connected, form, history, onUpdateState, payForMint, publicKey, setVisible, state.waifu, waitForMint]);
+  }, [
+    connected,
+    form,
+    getCertificateFile,
+    history,
+    onUpdateState,
+    payForMint,
+    publicKey,
+    setVisible,
+    state.waifu,
+    waitForMint,
+  ]);
 
   useEffect(() => {
     if (connected && resumeMint) {
@@ -107,7 +135,7 @@ export default function MintForm() {
 
   return (
     <Form form={form}>
-      <Certificate>
+      <CertificateForm>
         <Card hoverable>
           <Row className="flow">
             <Col>
@@ -169,7 +197,7 @@ export default function MintForm() {
             </Col>
           </Row>
         </Card>
-      </Certificate>
+      </CertificateForm>
       <MintButtonWrapper>
         <Space direction="vertical" size="middle">
           <div className="switch">
@@ -184,11 +212,45 @@ export default function MintForm() {
           <NftCounter />
         </Space>
       </MintButtonWrapper>
+      <button
+        onClick={async () => {
+          // const dataUrl = await htmlToDataUrl('#certificate');
+          // downloadURI(dataUrl, `lol_${new Date().getTime()}.png`);
+
+          const f = await getCertificateFile({
+            name: 'lolollo',
+            id: 123,
+            holder: '2jsdfkashdkf',
+          });
+          console.log(f);
+          const dataUrl = await fileToDataUrl(f);
+          downloadURI(dataUrl, `lol_${new Date().getTime()}.png`);
+        }}
+      >
+        download
+      </button>
+      <CertificateContainer>
+        <Certificate
+          className="certificate"
+          id={certificateParams.id}
+          name={certificateParams.name}
+          holder={certificateParams.holder}
+        />
+      </CertificateContainer>
     </Form>
   );
 }
 
-const Certificate = styled.div`
+function downloadURI(uri: string, name: string) {
+  const link = document.createElement('a');
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+const CertificateForm = styled.div`
   text-align: center;
 `;
 
@@ -218,5 +280,19 @@ const MintButtonWrapper = styled.div`
   }
   .solLogo {
     margin-top: 2px;
+  }
+`;
+
+const CertificateContainer = styled.div`
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 640px;
+  height: 451px;
+  position: absolute;
+  left: -9000px;
+  top: -9000px;
+
+  .certificate {
+    position: absolute;
   }
 `;

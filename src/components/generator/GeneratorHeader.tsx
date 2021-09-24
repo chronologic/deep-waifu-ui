@@ -4,8 +4,8 @@ import { Typography, Layout, Row, Col } from 'antd';
 import { flamingo, whitesmoke } from '../colors';
 import { useWaifu } from '../../hooks';
 import { AppHeader } from '../shared';
-import MintForm from './MintForm';
 import { OrderPillow } from '../pillow';
+import MintForm from './MintForm';
 
 const { Content } = Layout;
 const { Title } = Typography;

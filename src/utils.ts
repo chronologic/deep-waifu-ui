@@ -1,3 +1,5 @@
+import html2canvas from 'html2canvas';
+
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -32,4 +34,10 @@ export async function srcToFile(src: string, fileName: string, mimeType: string)
   const ab = await res.arrayBuffer();
 
   return new File([ab], fileName, { type: mimeType });
+}
+
+export async function htmlToDataUrl(selector: string): Promise<string> {
+  const canvas = await html2canvas(document.querySelector(selector)!, { allowTaint: true });
+
+  return canvas.toDataURL('image/png');
 }

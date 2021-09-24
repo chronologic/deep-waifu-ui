@@ -17,11 +17,22 @@ const api = {
 
     return res;
   },
-  async mint(tx: string, selfie: File, name: string): Promise<void> {
+  async mint({
+    tx,
+    waifu,
+    certificate,
+    name,
+  }: {
+    tx: string;
+    waifu: File;
+    certificate: File;
+    name: string;
+  }): Promise<void> {
     const fd = new FormData();
     fd.append('tx', tx);
     fd.append('name', name);
-    fd.append('selfie', selfie, 'selfie.jpg');
+    fd.append('waifu', waifu, 'waifu.png');
+    fd.append('certificate', certificate, 'certificate.png');
 
     const { data } = await client.post(`/mint`, fd, { responseType: 'json' });
 

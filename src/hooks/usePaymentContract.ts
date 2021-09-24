@@ -18,7 +18,17 @@ export function usePaymentContract() {
     return pdaState as any;
   }, [program.account.paymentStorage]);
 
-  const payForMint = useCallback(async (): Promise<string> => {
+  const extractId = useCallback(
+    async (tx: string): Promise<number> => {
+      const res = await provider.connection.getTransaction(tx);
+      const logs = extractLogs(res!.meta!.logMessages!);
+
+      return extractIdFromLogs(logs);
+    },
+    [provider.connection]
+  );
+
+  const payForMint = useCallback(async (): Promise<{ tx: string; payer: string; id: number }> => {
     const state = await fetchState();
 
     const tx = await program.rpc.payForMint({
@@ -39,9 +49,26 @@ export function usePaymentContract() {
     });
 
     await provider.connection.confirmTransaction(tx);
+    const id = await extractId(tx);
 
-    return tx;
-  }, [fetchState, program, provider, wallet.publicKey]);
+    return { tx, payer: wallet.publicKey!.toBase58(), id };
+  }, [extractId, fetchState, program.rpc, provider.connection, wallet.publicKey]);
 
   return { fetchState, payForMint };
+}
+
+function extractLogs(logMessages: string[]): string[] {
+  const startIndex = logMessages.findIndex((msg) => msg.startsWith(`Program ${PAYMENT_PROGRAM_ID} invoke`));
+  const endIndex = logMessages.findIndex((msg) => msg === `Program ${PAYMENT_PROGRAM_ID} success`);
+
+  return logMessages.slice(startIndex, endIndex);
+}
+
+function extractIdFromLogs(logMessages: string[]): number {
+  const paymentRegex = /\[([A-Za-z0-9]{44}):([0-9]{1,4})\]/;
+  const msg = logMessages.find((msg) => msg.includes('Paid for mint'));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, payer, id] = msg!.match(paymentRegex)!;
+
+  return Number(id);
 }

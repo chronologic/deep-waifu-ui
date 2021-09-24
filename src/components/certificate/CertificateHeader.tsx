@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { Typography, Layout, Space, Button, Image, Row, Col, Card } from 'antd';
+import { Typography, Layout, Space, Button, Row, Col } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
-import html2canvas from 'html2canvas';
 import jsPdf from 'jspdf';
 
 import { SHARE_URL, SOLANA_ENV } from '../../env';
@@ -11,14 +10,19 @@ import sol from '../../img/solana-icon.svg';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
 import { AppHeader } from '../shared';
 import { OrderPillow } from '../pillow';
+import { htmlToDataUrl } from '../../utils';
+import Certificate from './Certificate';
 
 const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function CertificateHeader() {
   const { state } = useWaifu();
 
-  const handlePrintPDF = useCallback(() => printPDF(state.name), [state.name]);
+  const handlePrintPDF = useCallback(async () => {
+    const dataUrl = await htmlToDataUrl('#certificate');
+    printPDF(dataUrl, state.name);
+  }, [state.name]);
 
   const tweetUrl = useMemo(() => {
     const certId = state.certificateLink?.split('/').reverse()[0];
@@ -36,38 +40,7 @@ export default function CertificateHeader() {
           </Row>
           <Row className="flow">
             <Col flex="640px">
-              <Overlay id="certificate">
-                <Certificate>
-                  <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
-                </Certificate>
-                <CertificateImage>
-                  <Image width={256} preview={false} src={state.waifuDataUrl} />
-                </CertificateImage>
-                <TextBlock>
-                  <Row className="flow">
-                    <Col flex="240px">
-                      <Space direction="vertical">
-                        <Title className="title30">Certificate of Adoption</Title>
-                        <Text className="titleJumbo">養子縁組証明書</Text>
-                        <Text strong className="text14">
-                          Let it be known to all that the holder of the DeepWaifu known by the name of
-                        </Text>
-                        <Text className="titleName">{state.name}</Text>
-                        <Text strong className="text14">
-                          has agreed to provide a loving home for this waifu and promised to keep it safe.
-                        </Text>
-                        <br />
-                        <Text className="text8">
-                          <strong>Token ID:</strong> {String(state.id).padStart(4, '0')}
-                        </Text>
-                        <Text className="text8">
-                          <strong>Holder:</strong> {state.holder}
-                        </Text>
-                      </Space>
-                    </Col>
-                  </Row>
-                </TextBlock>
-              </Overlay>
+              <Certificate />
               <Mint>
                 <Space direction="vertical" size="middle">
                   <div className="mintBtn">
@@ -108,71 +81,17 @@ export default function CertificateHeader() {
   );
 }
 
-function printPDF(name: string) {
-  html2canvas(document.getElementById('certificate')!, { allowTaint: true }).then((canvas: HTMLCanvasElement) => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPdf({
-      orientation: 'landscape',
-      unit: 'px',
-      format: [640, 451],
-    });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`certificate_of_adoption_${name}_${new Date().toISOString()}.pdf`);
+function printPDF(dataUrl: string, name: string) {
+  const pdf = new jsPdf({
+    orientation: 'landscape',
+    unit: 'px',
+    format: [640, 451],
   });
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+  pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+  pdf.save(`certificate_of_adoption_${name}_${new Date().toISOString()}.pdf`);
 }
-
-const Overlay = styled.div`
-  position: relative;
-  top: 0;
-  left: 0;
-`;
-
-const Certificate = styled.div`
-  text-align: center;
-  position: relative;
-  top: 0;
-  left: 0;
-  margin-bottom: 3em;
-
-  .ant-card-body {
-    display: none;
-  }
-  .ant-card-cover,
-  .ant-card-bordered {
-    height: 451px;
-  }
-`;
-
-const CertificateImage = styled.div`
-  position: absolute;
-  top: 140px;
-  left: 70px;
-  transform: rotate(-14.5deg);
-  mix-blend-mode: multiply;
-`;
-
-const TextBlock = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 365px;
-  transform: rotate(-14.5deg);
-  text-align: center;
-  mix-blend-mode: multiply;
-
-  .titleName {
-    font-family: Hachi Maru Pop;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 30px;
-    line-height: 36px;
-    color: ${flamingo};
-  }
-  .text14 {
-    color: ${bluegrey};
-  }
-`;
 
 const Mint = styled.div`
   text-align: center;
