@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { Typography, Card, Space, Button, Image, message } from 'antd';
+import { Typography, Card, Space, Button, message } from 'antd';
 
 import { flamingo } from '../colors';
 import { apiService } from '../../services';
 import { useWaifu } from '../../hooks';
-import { sleep } from '../../utils';
+import PillowMockup from './PillowMockup';
 
 const { Title, Text } = Typography;
 
-export default function Pillow() {
+export default function OrderPillow() {
   const { state } = useWaifu();
   const [loading, setLoading] = useState(false);
   const handleOrderIntent = useCallback(async () => {
@@ -29,19 +29,14 @@ export default function Pillow() {
   }, [state]);
 
   return (
-    <PillowMockup>
+    <Container>
       <Card bordered={false}>
-        <Space direction="vertical" size="middle">
+        <Space direction="vertical" size="middle" className="space">
           <div>
             <Title className="titleFeaturesRed">ヽ(*・ω・)ﾉ</Title>
             <Title className="titleFeatures">Order Pillow</Title>
           </div>
-          <PillowBase>
-            <Image width={180} preview={false} src={'../img/pillow-base.png'} />
-          </PillowBase>
-          <PillowImage>
-            <Image width={180} preview={false} src={state.waifuDataUrl || state.selfieDataUrl} />
-          </PillowImage>
+          <PillowMockup />
           <Text className="text14">
             Get your DeepWaifu printed on both sides of a 18"x18" pillow in full color. The pillows are soft yet
             durable, made from 100% spun polyester poplin fabric.
@@ -54,11 +49,11 @@ export default function Pillow() {
           </Button>
         </Space>
       </Card>
-    </PillowMockup>
+    </Container>
   );
 }
 
-const PillowMockup = styled.div`
+const Container = styled.div`
   position: relative;
   top: 0;
   left: 0;
@@ -80,22 +75,10 @@ const PillowMockup = styled.div`
     color: ${flamingo};
     border-color: ${flamingo};
   }
-`;
 
-const PillowBase = styled.div`
-  position: relative;
-  top: 0;
-  left: 0;
-`;
-
-const PillowImage = styled.div`
-  position: absolute;
-  top: 75px;
-  left: 60px;
-  mix-blend-mode: multiply;
-
-  mask-image: url('../img/pillow-mask.png');
-  mask-size: 180px;
-  mask-repeat: no-repeat;
-  mask-position: center;
+  .space {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `;

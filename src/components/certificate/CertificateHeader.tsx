@@ -9,7 +9,8 @@ import { SOLANA_ENV } from '../../env';
 import { useWaifu } from '../../hooks';
 import sol from '../../img/solana-icon.svg';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
-import { AppHeader, Pillow } from '../shared';
+import { AppHeader } from '../shared';
+import { OrderPillow } from '../pillow';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -100,7 +101,7 @@ export default function CertificateHeader() {
               </Mint>
             </Col>
             <Col flex="auto">
-              <Pillow />
+              <OrderPillow />
             </Col>
           </Row>
         </Content>

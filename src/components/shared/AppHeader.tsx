@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Typography, Layout, Divider } from 'antd';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 import { flamingo } from '../colors';
 
@@ -8,6 +9,8 @@ const { Header } = Layout;
 const { Title } = Typography;
 
 export default function AppHeader() {
+  const wallet = useWallet();
+
   return (
     <FixedHeader>
       <CustomHeader>
@@ -20,7 +23,7 @@ export default function AppHeader() {
               <Title>ディープ</Title>
               <Title className="titleRed">ワイフ</Title>
             </a>
-            <WalletMultiButton className="walletConnector" />
+            <WalletMultiButton className={wallet.connected ? 'walletConnector' : 'walletConnector hidden'} />
           </CustomMenu>
         </Header>
       </CustomHeader>
@@ -56,6 +59,10 @@ const CustomMenu = styled.div`
       color: ${flamingo};
       border-color: ${flamingo};
       background-image: none;
+    }
+
+    &.hidden {
+      visibility: hidden;
     }
   }
 `;

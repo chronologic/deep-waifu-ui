@@ -2,10 +2,10 @@ import styled from 'styled-components';
 import { Typography, Layout, Row, Col } from 'antd';
 
 import { flamingo, whitesmoke } from '../colors';
-import { Pillow } from '../shared';
 import { useWaifu } from '../../hooks';
 import { AppHeader } from '../shared';
 import MintForm from './MintForm';
+import { OrderPillow } from '../pillow';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -38,7 +38,7 @@ export default function GeneratorHeader() {
               <MintForm />
             </Col>
             <Col flex="auto">
-              <Pillow />
+              <OrderPillow />
             </Col>
           </Row>
         </Content>

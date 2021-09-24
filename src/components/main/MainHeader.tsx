@@ -24,7 +24,7 @@ export default function MainHeader() {
       onUpdateState({
         selfie,
       });
-      history.push('/generator');
+      history.push('/mint');
     },
     [history, onUpdateState, onResetState]
   );
