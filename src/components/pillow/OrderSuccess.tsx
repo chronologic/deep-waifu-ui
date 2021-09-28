@@ -3,7 +3,7 @@ import { Typography, Layout, Row, Col } from 'antd';
 import queryString from 'query-string';
 
 import { flamingo, whitesmoke } from '../colors';
-import { AppHeader } from '../shared';
+import { AppHeader, Confetti } from '../shared';
 import PillowMockup from './PillowMockup';
 
 const { Content } = Layout;
@@ -14,6 +14,7 @@ const { paymentId, orderId } = queryString.parse(window.location.search);
 export default function OrderSuccess() {
   return (
     <Layout>
+      <Confetti />
       <AppHeader />
       <CustomContent>
         <Content>
@@ -49,7 +50,6 @@ export default function OrderSuccess() {
 
 const CustomContent = styled.div`
   background: ${whitesmoke};
-  min-height: 100vh;
 
   .ant-layout-content {
     max-width: 960px;
@@ -72,8 +72,11 @@ const CustomContent = styled.div`
   }
 
   .pillowContainer {
-    margin-top: 4em;
-    margin-bottom: 6em;
+    margin-top: 10em;
+    margin-bottom: 12em;
+    > div {
+      transform: scale(2);
+    }
   }
 
   .orderDetails {

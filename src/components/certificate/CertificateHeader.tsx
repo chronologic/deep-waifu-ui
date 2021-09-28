@@ -8,7 +8,7 @@ import { SHARE_URL, SOLANA_ENV } from '../../env';
 import { useWaifu } from '../../hooks';
 import sol from '../../img/solana-icon.svg';
 import { flamingo, whitesmoke, bluegrey } from '../colors';
-import { AppHeader } from '../shared';
+import { AppHeader, Confetti } from '../shared';
 import { OrderPillow } from '../pillow';
 import { htmlToDataUrl } from '../../utils';
 import Certificate from './Certificate';
@@ -31,6 +31,7 @@ export default function CertificateHeader() {
 
   return (
     <Layout>
+      <Confetti />
       <AppHeader />
       <CustomContent id="upload">
         <Content>
