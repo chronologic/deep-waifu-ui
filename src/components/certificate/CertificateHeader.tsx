@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Typography, Layout, Space, Button, Row, Col } from 'antd';
 import { FilePdfFilled } from '@ant-design/icons';
 import jsPdf from 'jspdf';
+import { useHistory } from 'react-router-dom';
 
 import { SHARE_URL, SOLANA_ENV } from '../../env';
 import { useWaifu } from '../../hooks';
@@ -17,12 +18,18 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 export default function CertificateHeader() {
-  const { state } = useWaifu();
+  const history = useHistory();
+  const { state, onResetState } = useWaifu();
 
   const handlePrintPDF = useCallback(async () => {
     const dataUrl = await htmlToDataUrl('#certificate');
-    printPDF(dataUrl, state.name);
-  }, [state.name]);
+    printPDF(dataUrl);
+  }, []);
+
+  const handleReset = useCallback(async () => {
+    onResetState();
+    history.push('/');
+  }, [history, onResetState]);
 
   const tweetUrl = useMemo(() => {
     const certId = state.certificateLink?.split('/').reverse()[0];
@@ -42,6 +49,8 @@ export default function CertificateHeader() {
           <Row className="flow">
             <Col flex="640px">
               <Certificate />
+              <br />
+              <br />
               <Mint>
                 <Space direction="vertical" size="middle">
                   <div className="mintBtn">
@@ -49,8 +58,8 @@ export default function CertificateHeader() {
                       <Button danger size="large" href={tweetUrl} target="_blank" rel="noreferrer">
                         Tweet it!
                       </Button>
-                      <Button type="primary" size="large" danger>
-                        View NFT
+                      <Button type="primary" size="large" danger onClick={handleReset}>
+                        Mint another!
                       </Button>
                     </Space>
                   </div>
@@ -61,6 +70,8 @@ export default function CertificateHeader() {
                         danger
                         icon={<img width="14px" className="anticon" src={sol} alt="sol" />}
                         href={`https://explorer.solana.com/tx/${state.tx}?cluster=${SOLANA_ENV}`}
+                        target="_blank"
+                        rel="noreferer noopener"
                       >
                         View on Solana Explorer
                       </Button>
@@ -82,7 +93,7 @@ export default function CertificateHeader() {
   );
 }
 
-function printPDF(dataUrl: string, name: string) {
+function printPDF(dataUrl: string) {
   const pdf = new jsPdf({
     orientation: 'landscape',
     unit: 'px',
@@ -91,7 +102,7 @@ function printPDF(dataUrl: string, name: string) {
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = pdf.internal.pageSize.getHeight();
   pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-  pdf.save(`certificate_of_adoption_${name}_${new Date().toISOString()}.pdf`);
+  pdf.save(`certificate_of_adoption_${new Date().toISOString()}.pdf`);
 }
 
 const Mint = styled.div`

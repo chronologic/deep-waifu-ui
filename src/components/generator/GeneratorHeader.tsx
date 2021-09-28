@@ -3,7 +3,7 @@ import { Typography, Layout, Row, Col } from 'antd';
 
 import { flamingo, whitesmoke } from '../colors';
 import { useWaifu } from '../../hooks';
-import { AppHeader } from '../shared';
+import { AppHeader, KaomojiLoader } from '../shared';
 import { OrderPillow } from '../pillow';
 import MintForm from './MintForm';
 
@@ -17,6 +17,7 @@ export default function GeneratorHeader() {
   return (
     <Layout>
       <AppHeader />
+      {loading && <KaomojiLoader message="We are generating your Waifu" />}
       <CustomContent id="upload">
         <Content>
           <Row className="mainTitle">

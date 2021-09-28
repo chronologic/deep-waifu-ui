@@ -8,13 +8,14 @@ import * as anchor from '@project-serum/anchor';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 import { usePaymentContract, useWaifu } from '../../hooks';
-import { fileToDataUrl, htmlToDataUrl, sleep, srcToFile } from '../../utils';
+import { htmlToDataUrl, sleep, srcToFile } from '../../utils';
 import { apiService } from '../../services';
-import { SECOND_MILLIS } from '../../constants';
+import { LAMPORTS_PER_DAY, SECOND_MILLIS } from '../../constants';
 import { IMintStatus } from '../../types';
 import { flamingo } from '../colors';
 import { Certificate } from '../certificate';
 import NftCounter from './NftCounter';
+import { KaomojiLoader } from '../shared';
 
 const { Title, Text } = Typography;
 
@@ -38,6 +39,8 @@ export default function MintForm() {
   const [resumeMint, setResumeMint] = useState(false);
   const [minting, setMinting] = useState(false);
   const [priceSol, setPriceSol] = useState(0);
+  const [priceDay, setPriceDay] = useState(0);
+  const [dayPayment, setDayPayment] = useState(false);
   const [certificateParams, setCertificateParams] = useState<ICertificateParams>({} as any);
 
   const waitForMint = useCallback(async (tx: string): Promise<IMintStatus> => {
@@ -77,7 +80,7 @@ export default function MintForm() {
     setMinting(true);
 
     try {
-      const { tx, payer, id } = await payForMint();
+      const { tx, payer, id } = await payForMint(dayPayment);
       message.success('Payment successful!');
       const certificate = await getCertificateFile({ id, name, holder: payer });
       await apiService.mint({ tx, waifu: state.waifu!, certificate, name });
@@ -101,6 +104,7 @@ export default function MintForm() {
     }
   }, [
     connected,
+    dayPayment,
     form,
     getCertificateFile,
     history,
@@ -125,16 +129,18 @@ export default function MintForm() {
   }, [history, onResetState]);
 
   useEffect(() => {
-    async function fetchPrice() {
+    async function fetchPrices() {
       const state = await fetchState();
       setPriceSol(state.priceLamports.mul(new anchor.BN(100)).div(new anchor.BN(LAMPORTS_PER_SOL)).toNumber() / 100);
+      setPriceDay(state.priceDay.mul(new anchor.BN(100)).div(new anchor.BN(LAMPORTS_PER_DAY)).toNumber() / 100);
     }
 
-    fetchPrice();
+    fetchPrices();
   }, [fetchState]);
 
   return (
     <Form form={form}>
+      {minting && <KaomojiLoader message="Your Waifu is being minted! This may take a while" />}
       <CertificateForm>
         <Card hoverable>
           <Row className="flow">
@@ -171,7 +177,7 @@ export default function MintForm() {
                     },
                   ]}
                 >
-                  <Input size="large" placeholder="DeepWaifu’s Name" />
+                  <Input size="large" placeholder="DeepWaifu’s Name" disabled={minting} />
                 </Form.Item>
                 <Text strong className="text14">
                   has agreed to provide a loving home for this waifu and promised to keep it safe.
@@ -190,7 +196,7 @@ export default function MintForm() {
                     },
                   ]}
                 >
-                  <Input size="large" type="email" placeholder="Your Email" />
+                  <Input size="large" type="email" placeholder="Your Email" disabled={minting} />
                 </Form.Item>
                 <Text className="text12">Your email will be kept private</Text>
               </Space>
@@ -203,7 +209,12 @@ export default function MintForm() {
           <div className="switch">
             <Space direction="horizontal" size="large">
               <Image className="solLogo" height={14} preview={false} src={'../img/solana-logo-red.svg'} />
-              <Switch checkedChildren={`Pay ${priceSol} SOL`} unCheckedChildren="Pay with DAY" defaultChecked />
+              <Switch
+                checkedChildren={`Pay ${priceSol} SOL`}
+                unCheckedChildren={`Pay ${priceDay} DAY`}
+                checked={!dayPayment}
+                onChange={(checked) => setDayPayment(!checked)}
+              />
             </Space>
           </div>
           <Button type="primary" size="large" danger disabled={minting} loading={minting} onClick={handleMint}>
@@ -212,23 +223,6 @@ export default function MintForm() {
           <NftCounter />
         </Space>
       </MintButtonWrapper>
-      <button
-        onClick={async () => {
-          // const dataUrl = await htmlToDataUrl('#certificate');
-          // downloadURI(dataUrl, `lol_${new Date().getTime()}.png`);
-
-          const f = await getCertificateFile({
-            name: 'lolollo',
-            id: 123,
-            holder: '2jsdfkashdkf',
-          });
-          console.log(f);
-          const dataUrl = await fileToDataUrl(f);
-          downloadURI(dataUrl, `lol_${new Date().getTime()}.png`);
-        }}
-      >
-        download
-      </button>
       <CertificateContainer>
         <Certificate
           className="certificate"
@@ -239,15 +233,6 @@ export default function MintForm() {
       </CertificateContainer>
     </Form>
   );
-}
-
-function downloadURI(uri: string, name: string) {
-  const link = document.createElement('a');
-  link.download = name;
-  link.href = uri;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 }
 
 const CertificateForm = styled.div`

@@ -1,11 +1,18 @@
 import { useCallback, useMemo } from 'react';
 import * as anchor from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
+import * as splToken from '@solana/spl-token';
 
 import idl from '../idl/deep_waifu_payment_contract.json';
-import { PAYMENT_PROGRAM_ID, PAYMENT_PROGRAM_PDA } from '../env';
+import { PAYMENT_PROGRAM_ID, PAYMENT_PROGRAM_PDA, PAYMENT_TOKEN_MINT } from '../env';
 import { useSolanaProvider } from './useSolanaProvider';
 import { IPaymentPda } from '../types';
+
+interface IPaymentResult {
+  tx: string;
+  payer: string;
+  id: number;
+}
 
 export function usePaymentContract() {
   const provider = useSolanaProvider();
@@ -28,17 +35,23 @@ export function usePaymentContract() {
     [provider.connection]
   );
 
-  const payForMint = useCallback(async (): Promise<{ tx: string; payer: string; id: number }> => {
+  const payForMintSol = useCallback(async (): Promise<string> => {
     const state = await fetchState();
 
-    const tx = await program.rpc.payForMint({
+    console.log('initializing SOL payment...', {
+      myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA).toBase58(),
+      payer: wallet.publicKey!.toBase58(),
+      beneficiary: state.beneficiary.toBase58(),
+      systemProgram: anchor.web3.SystemProgram.programId.toBase58(),
+    });
+
+    return program.rpc.payForMint({
       accounts: {
         myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA),
         payer: wallet.publicKey,
         beneficiary: state.beneficiary,
         systemProgram: anchor.web3.SystemProgram.programId,
       },
-      signers: [],
       instructions: [
         anchor.web3.SystemProgram.transfer({
           fromPubkey: wallet.publicKey!,
@@ -47,12 +60,49 @@ export function usePaymentContract() {
         }),
       ],
     });
+  }, [fetchState, program.rpc, wallet.publicKey]);
 
-    await provider.connection.confirmTransaction(tx);
-    const id = await extractId(tx);
+  const payForMintDay = useCallback(async (): Promise<string> => {
+    const state = await fetchState();
 
-    return { tx, payer: wallet.publicKey!.toBase58(), id };
-  }, [extractId, fetchState, program.rpc, provider.connection, wallet.publicKey]);
+    const walletToken = await splToken.Token.getAssociatedTokenAddress(
+      splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+      splToken.TOKEN_PROGRAM_ID,
+      new anchor.web3.PublicKey(PAYMENT_TOKEN_MINT),
+      wallet.publicKey!,
+      false
+    );
+
+    console.log('initializing DAY payment...', {
+      myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA).toBase58(),
+      payer: wallet.publicKey!.toBase58(),
+      from: walletToken.toBase58(),
+      beneficiaryDay: state.beneficiaryDay.toBase58(),
+      tokenProgram: splToken.TOKEN_PROGRAM_ID.toBase58(),
+    });
+
+    return program.rpc.payForMintSpl({
+      accounts: {
+        myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA),
+        payer: wallet.publicKey,
+        from: walletToken,
+        beneficiaryDay: state.beneficiaryDay,
+        tokenProgram: splToken.TOKEN_PROGRAM_ID,
+      },
+    });
+  }, [fetchState, program.rpc, wallet.publicKey]);
+
+  const payForMint = useCallback(
+    async (dayPayment: boolean): Promise<IPaymentResult> => {
+      const tx = dayPayment ? await payForMintDay() : await payForMintSol();
+
+      await provider.connection.confirmTransaction(tx);
+      const id = await extractId(tx);
+
+      return { tx, payer: wallet.publicKey!.toBase58(), id };
+    },
+    [extractId, payForMintDay, payForMintSol, provider.connection, wallet.publicKey]
+  );
 
   return { fetchState, payForMint };
 }
