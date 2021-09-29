@@ -71,11 +71,17 @@ export default function MintForm() {
   }, []);
 
   const handleMint = useCallback(async () => {
-    const { name } = await form.validateFields();
+    const { name, email } = await form.validateFields();
 
     if (!connected) {
       setResumeMint(true);
       return setVisible(true);
+    }
+
+    try {
+      (window as any).heap.identify(email);
+    } catch (e) {
+      console.error(e as any);
     }
 
     try {
