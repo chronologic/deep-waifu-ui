@@ -2,24 +2,21 @@ import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Typography, Space, Image, Row, Col, Card } from 'antd';
 
-import { useWaifu } from '../../hooks';
 import { flamingo, bluegrey } from '../colors';
 
 const { Title, Text } = Typography;
 
 interface IProps {
   className?: string;
-  waifuDataUrl?: string;
-  name?: string;
-  id?: number;
-  holder?: string;
+  waifuDataUrl: string;
+  name: string;
+  id: number;
+  holder: string;
 }
 
 export default function Certificate({ className, waifuDataUrl, name, id, holder }: IProps) {
-  const { state } = useWaifu();
-
   const nameSize = useMemo(() => {
-    const nameLength = (name || state.name || '').length || 0;
+    const nameLength = (name || '').length || 0;
     if (nameLength <= 8) {
       return 'xl';
     } else if (nameLength <= 12) {
@@ -31,7 +28,7 @@ export default function Certificate({ className, waifuDataUrl, name, id, holder 
     } else {
       return 'xs';
     }
-  }, [name, state]);
+  }, [name]);
 
   return (
     <Overlay id="certificate" className={className}>
@@ -39,7 +36,7 @@ export default function Certificate({ className, waifuDataUrl, name, id, holder 
         <Card hoverable cover={<img height="451" alt="certificate" src={'../img/mockup-blank.jpg'} />}></Card>
       </CertificateBase>
       <CertificateImage>
-        <Image width={256} preview={false} src={waifuDataUrl || state.waifuDataUrl} />
+        <Image width={256} preview={false} src={waifuDataUrl} />
       </CertificateImage>
       <TextBlock>
         <Row className="flow">
@@ -50,15 +47,15 @@ export default function Certificate({ className, waifuDataUrl, name, id, holder 
               <Text strong className="text14">
                 Let it be known to all that the holder of the DeepWaifu known by the name of
               </Text>
-              <Text className={`titleName ${nameSize}`}>{name || state.name}</Text>
+              <Text className={`titleName ${nameSize}`}>{name}</Text>
               <Text strong className="text14">
                 has agreed to provide a loving home for this waifu and promised to keep it safe.
               </Text>
               <Text className="text10 first">
-                <strong>Token ID:</strong> {String(id || state.id).padStart(4, '0')}
+                <strong>Token ID:</strong> {String(id).padStart(4, '0')}
               </Text>
               <Text className="text10">
-                <strong>Holder:</strong> {holder || state.holder}
+                <strong>Holder:</strong> {holder}
               </Text>
             </Space>
           </Col>

@@ -22,7 +22,7 @@ export default function CertificateHeader() {
   const { state, onResetState } = useWaifu();
 
   const handlePrintPDF = useCallback(async () => {
-    const dataUrl = await htmlToDataUrl('#certificate', { width: 640, height: 451 });
+    const dataUrl = await htmlToDataUrl('#certificate');
     printPDF(dataUrl);
   }, []);
 
@@ -48,7 +48,7 @@ export default function CertificateHeader() {
           </Row>
           <Row className="flow">
             <Col flex="640px">
-              <Certificate />
+              <Certificate holder={state.holder} id={state.id} name={state.name} waifuDataUrl={state.waifuDataUrl} />
               <br />
               <br />
               <Mint>

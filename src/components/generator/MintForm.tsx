@@ -64,8 +64,8 @@ export default function MintForm() {
 
   const getCertificateFile = useCallback(async (params: ICertificateParams) => {
     setCertificateParams(params);
-    await sleep(200); // give time to rerender
-    const dataUrl = await htmlToDataUrl('#certificate', { width: 640, height: 451 });
+    await sleep(100); // give time to rerender
+    const dataUrl = await htmlToDataUrl('#certificate');
 
     return srcToFile(dataUrl, 'certificate.png', 'image/png');
   }, []);
@@ -239,6 +239,7 @@ export default function MintForm() {
           id={certificateParams.id}
           name={certificateParams.name}
           holder={certificateParams.holder}
+          waifuDataUrl={state.waifuDataUrl}
         />
       </CertificateContainer>
     </Form>
