@@ -37,6 +37,7 @@ export default function MintForm() {
   const { setVisible } = useWalletModal();
   const { payForMint, fetchState } = usePaymentContract();
   const [resumeMint, setResumeMint] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [minting, setMinting] = useState(false);
   const [priceSol, setPriceSol] = useState(0);
   const [priceDay, setPriceDay] = useState(0);
@@ -77,11 +78,11 @@ export default function MintForm() {
       return setVisible(true);
     }
 
-    setMinting(true);
-
     try {
+      setPaying(true);
       const { tx, payer, id } = await payForMint(dayPayment);
       message.success('Payment successful!');
+      setMinting(true);
       const certificate = await getCertificateFile({ id, name, holder: payer });
       await apiService.mint({ tx, waifu: state.waifu!, certificate, name });
       const res = await waitForMint(tx);
@@ -100,6 +101,7 @@ export default function MintForm() {
     } catch (e) {
       message.error((e as any).message);
     } finally {
+      setPaying(false);
       setMinting(false);
     }
   }, [
@@ -177,7 +179,7 @@ export default function MintForm() {
                     },
                   ]}
                 >
-                  <Input size="large" placeholder="DeepWaifu’s Name" disabled={minting} />
+                  <Input size="large" placeholder="DeepWaifu’s Name" disabled={minting || paying} />
                 </Form.Item>
                 <Text strong className="text14">
                   has agreed to provide a loving home for this waifu and promised to keep it safe.
@@ -196,7 +198,7 @@ export default function MintForm() {
                     },
                   ]}
                 >
-                  <Input size="large" type="email" placeholder="Your Email" disabled={minting} />
+                  <Input size="large" type="email" placeholder="Your Email" disabled={minting || paying} />
                 </Form.Item>
                 <Text className="text12">Your email will be kept private</Text>
               </Space>
@@ -209,15 +211,17 @@ export default function MintForm() {
           <div className="switch">
             <Space direction="horizontal" size="large">
               <Image className="solLogo" height={14} preview={false} src={'../img/solana-logo-red.svg'} />
-              <Switch
-                checkedChildren={`Pay ${priceSol} SOL`}
-                unCheckedChildren={`Pay ${priceDay} DAY`}
-                checked={!dayPayment}
-                onChange={(checked) => setDayPayment(!checked)}
-              />
+              <SwitchWrapper>
+                <Switch
+                  checkedChildren={`Pay ${priceSol} SOL`}
+                  unCheckedChildren={`Pay ${priceDay} DAY`}
+                  checked={!dayPayment}
+                  onChange={(checked) => setDayPayment(!checked)}
+                />
+              </SwitchWrapper>
             </Space>
           </div>
-          <Button type="primary" size="large" danger disabled={minting} loading={minting} onClick={handleMint}>
+          <Button type="primary" size="large" danger loading={minting || paying} onClick={handleMint}>
             Mint DeepWaifu NFT
           </Button>
           <NftCounter />
@@ -237,6 +241,10 @@ export default function MintForm() {
 
 const CertificateForm = styled.div`
   text-align: center;
+`;
+
+const SwitchWrapper = styled.div`
+  min-width: 100px;
 `;
 
 const CertificateImage = styled.div`

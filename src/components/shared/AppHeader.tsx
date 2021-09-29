@@ -3,6 +3,7 @@ import { Typography, Layout, Divider } from 'antd';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 
+import { useWaifu } from '../../hooks';
 import { flamingo } from '../colors';
 
 const { Header } = Layout;
@@ -10,13 +11,14 @@ const { Title } = Typography;
 
 export default function AppHeader() {
   const wallet = useWallet();
+  const { onResetState } = useWaifu();
 
   return (
     <FixedHeader>
       <CustomHeader>
         <Header>
           <CustomMenu>
-            <a className="title" href="/">
+            <a className="title" href="/" onClick={onResetState}>
               <Title>Deep</Title>
               <Title className="titleRed">Waifu</Title>
               <Divider type="vertical" />

@@ -12,7 +12,7 @@ const { Title } = Typography;
 
 export default function GeneratorHeader() {
   const { state } = useWaifu();
-  const loading = !state.waifuDataUrl;
+  const loading = !!state.selfieDataUrl && !state.waifuDataUrl;
 
   return (
     <Layout>

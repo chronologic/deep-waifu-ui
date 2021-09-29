@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import { Layout, Image } from 'antd';
 import { useHistory } from 'react-router-dom';
 
-import { flamingo } from '../colors';
-import ImageUploader from './ImageUploader';
 import { usePaymentContract, useWaifu } from '../../hooks';
+import { sleep } from '../../utils';
+import { flamingo } from '../colors';
 import { AppHeader } from '../shared';
+import ImageUploader from './ImageUploader';
 import SoldOut from './SoldOut';
 
 const { Content } = Layout;
@@ -19,8 +20,9 @@ export default function MainHeader() {
   const [soldOut, setSoldOut] = useState(false);
 
   const handleSelfieUploadDone = useCallback(
-    (selfie: File) => {
+    async (selfie: File) => {
       onResetState();
+      await sleep(100);
       onUpdateState({
         selfie,
       });
