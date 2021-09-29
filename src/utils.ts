@@ -36,11 +36,22 @@ export async function srcToFile(src: string, fileName: string, mimeType: string)
   return new File([ab], fileName, { type: mimeType });
 }
 
-export async function htmlToDataUrl(
-  selector: string,
-  { width, height }: { width?: number; height?: number } = {}
-): Promise<string> {
-  const canvas = await html2canvas(document.querySelector(selector)!, { allowTaint: true, width, height });
+export async function htmlToDataUrl(selector: string): Promise<string> {
+  const originalPixelRatio = window.devicePixelRatio;
+  // weird hack for retina displays images coming out 2x too big but seems to work
+  try {
+    (window as any).devicePixelRatio = 1;
+  } catch (e) {
+    //
+  }
+  const canvas = await html2canvas(document.querySelector(selector)!, { allowTaint: true });
 
-  return canvas.toDataURL('image/png');
+  const dataUrl = canvas.toDataURL('image/png');
+  try {
+    (window as any).devicePixelRatio = originalPixelRatio;
+  } catch (e) {
+    //
+  }
+
+  return dataUrl;
 }
