@@ -4,7 +4,6 @@ import { Layout, Image } from 'antd';
 import { useHistory } from 'react-router-dom';
 
 import { usePaymentContract, useWaifu } from '../../hooks';
-import { sleep } from '../../utils';
 import { flamingo } from '../colors';
 import { AppHeader } from '../shared';
 import ImageUploader from './ImageUploader';
@@ -14,21 +13,22 @@ const { Content } = Layout;
 
 export default function MainHeader() {
   const history = useHistory();
-  const { onUpdateState, onResetState } = useWaifu();
+  const { onUpdateState } = useWaifu();
   const { fetchState } = usePaymentContract();
   const [ready, setReady] = useState(false);
   const [soldOut, setSoldOut] = useState(false);
 
   const handleSelfieUploadDone = useCallback(
     async (selfie: File) => {
-      onResetState();
-      await sleep(100);
-      onUpdateState({
-        selfie,
-      });
+      onUpdateState(
+        {
+          selfie,
+        },
+        true
+      );
       history.push('/mint');
     },
-    [history, onUpdateState, onResetState]
+    [history, onUpdateState]
   );
 
   useEffect(() => {

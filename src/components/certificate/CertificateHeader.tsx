@@ -22,7 +22,7 @@ export default function CertificateHeader() {
   const { state, onResetState } = useWaifu();
 
   const handlePrintPDF = useCallback(async () => {
-    const dataUrl = await htmlToDataUrl('#certificate');
+    const dataUrl = await htmlToDataUrl('#certificate', { width: 640, height: 451 });
     printPDF(dataUrl);
   }, []);
 

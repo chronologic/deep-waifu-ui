@@ -25,7 +25,7 @@ export interface IWaifuState extends IWaifuSerializableState {
 
 export interface IWaifuContext {
   state: IWaifuState;
-  onUpdateState: (state: Partial<IWaifuState>) => void;
+  onUpdateState: (state: Partial<IWaifuState>, replace?: boolean) => void;
   onResetState: () => void;
 }
 
@@ -55,7 +55,7 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
   }, [persistState]);
 
   const handleUpdateState = useCallback(
-    async (state: Partial<IWaifuState>) => {
+    async (state: Partial<IWaifuState>, replace = false) => {
       const newState = { ...state };
 
       if (newState.waifu) {
@@ -73,16 +73,18 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
           newState.waifuDataUrl = await fileToDataUrl(res);
         } catch (e) {
           message.error((e as any).message || 'Unknown error. Please try again');
+          handleResetState();
+          throw e;
         }
       } else if (newState.selfieDataUrl) {
         newState.selfie = await srcToFile(newState.selfieDataUrl, 'selfie.jpg', 'image/jpeg');
       }
 
-      const updatedState = { ...waifuState, ...newState };
+      const updatedState = replace ? newState : { ...waifuState, ...newState };
 
-      persistState(updatedState);
+      persistState(updatedState as IWaifuState);
     },
-    [waifuState, persistState]
+    [waifuState, persistState, handleResetState]
   );
 
   useEffect(() => {
@@ -92,6 +94,7 @@ export const WaifuProvider: React.FC<IProps> = ({ children }: IProps) => {
     }
 
     init();
+    // only run this once so skip any dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

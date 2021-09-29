@@ -36,8 +36,11 @@ export async function srcToFile(src: string, fileName: string, mimeType: string)
   return new File([ab], fileName, { type: mimeType });
 }
 
-export async function htmlToDataUrl(selector: string): Promise<string> {
-  const canvas = await html2canvas(document.querySelector(selector)!, { allowTaint: true });
+export async function htmlToDataUrl(
+  selector: string,
+  { width, height }: { width?: number; height?: number } = {}
+): Promise<string> {
+  const canvas = await html2canvas(document.querySelector(selector)!, { allowTaint: true, width, height });
 
   return canvas.toDataURL('image/png');
 }

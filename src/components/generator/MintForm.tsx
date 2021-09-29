@@ -64,8 +64,8 @@ export default function MintForm() {
 
   const getCertificateFile = useCallback(async (params: ICertificateParams) => {
     setCertificateParams(params);
-    await sleep(100); // give time to rerender
-    const dataUrl = await htmlToDataUrl('#certificate');
+    await sleep(200); // give time to rerender
+    const dataUrl = await htmlToDataUrl('#certificate', { width: 640, height: 451 });
 
     return srcToFile(dataUrl, 'certificate.png', 'image/png');
   }, []);
@@ -281,9 +281,13 @@ const CertificateContainer = styled.div`
   flex-shrink: 0;
   width: 640px;
   height: 451px;
-  position: absolute;
+  /* position: absolute;
   left: -9000px;
-  top: -9000px;
+  top: -9000px; */
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999;
 
   .certificate {
     position: absolute;
