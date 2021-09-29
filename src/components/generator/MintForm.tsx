@@ -287,13 +287,9 @@ const CertificateContainer = styled.div`
   flex-shrink: 0;
   width: 640px;
   height: 451px;
-  /* position: absolute;
+  position: absolute;
   left: -9000px;
-  top: -9000px; */
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9999;
+  top: -9000px;
 
   .certificate {
     position: absolute;
