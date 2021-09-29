@@ -19,7 +19,7 @@ export default function Certificate({ className, waifuDataUrl, name, id, holder 
   const { state } = useWaifu();
 
   const nameSize = useMemo(() => {
-    const nameLength = name?.length || 0;
+    const nameLength = (name || state.name || '').length || 0;
     if (nameLength <= 8) {
       return 'xl';
     } else if (nameLength <= 12) {
@@ -31,7 +31,7 @@ export default function Certificate({ className, waifuDataUrl, name, id, holder 
     } else {
       return 'xs';
     }
-  }, [name]);
+  }, [name, state]);
 
   return (
     <Overlay id="certificate" className={className}>
