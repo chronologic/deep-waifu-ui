@@ -36,11 +36,12 @@ export async function srcToFile(src: string, fileName: string, mimeType: string)
   return new File([ab], fileName, { type: mimeType });
 }
 
-export async function htmlToDataUrl(selector: string): Promise<string> {
+export async function htmlToDataUrl(selector: string, scale = 1): Promise<string> {
   const originalPixelRatio = window.devicePixelRatio;
   // weird hack for retina displays images coming out 2x too big but seems to work
+  // also works for generally scaling the images up/down
   try {
-    (window as any).devicePixelRatio = 1;
+    (window as any).devicePixelRatio = scale;
   } catch (e) {
     //
   }

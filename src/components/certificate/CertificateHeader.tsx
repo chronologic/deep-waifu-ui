@@ -22,7 +22,7 @@ export default function CertificateHeader() {
   const { state, onResetState } = useWaifu();
 
   const handlePrintPDF = useCallback(async () => {
-    const dataUrl = await htmlToDataUrl('#certificate');
+    const dataUrl = await htmlToDataUrl('#certificate', 2);
     printPDF(dataUrl);
   }, []);
 
@@ -97,7 +97,7 @@ function printPDF(dataUrl: string) {
   const pdf = new jsPdf({
     orientation: 'landscape',
     unit: 'px',
-    format: [640, 451],
+    format: [1280, 902],
   });
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = pdf.internal.pageSize.getHeight();
