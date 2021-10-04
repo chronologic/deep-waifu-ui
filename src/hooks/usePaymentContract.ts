@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import * as splToken from '@solana/spl-token';
 
 import idl from '../idl/deep_waifu_payment_contract.json';
-import { PAYMENT_PROGRAM_ID, PAYMENT_PROGRAM_PDA, PAYMENT_TOKEN_MINT } from '../env';
+import { PAYMENT_PROGRAM_ID, PAYMENT_TOKEN_MINT } from '../env';
 import { useSolanaProvider } from './useSolanaProvider';
 import { IPaymentPda } from '../types';
 
@@ -20,7 +20,8 @@ export function usePaymentContract() {
   const program = useMemo(() => new anchor.Program(idl as any, PAYMENT_PROGRAM_ID, provider), [provider]);
 
   const fetchState = useCallback(async (): Promise<IPaymentPda> => {
-    const pdaState = await program.account.paymentStorage.fetch(PAYMENT_PROGRAM_PDA);
+    const [paymentProgramPda] = await getPaymentStoragePdaAddress();
+    const pdaState = await program.account.paymentStorage.fetch(paymentProgramPda);
 
     return pdaState as any;
   }, [program.account.paymentStorage]);
@@ -37,9 +38,10 @@ export function usePaymentContract() {
 
   const payForMintSol = useCallback(async (): Promise<string> => {
     const state = await fetchState();
+    const [paymentProgramPda] = await getPaymentStoragePdaAddress();
 
     console.log('initializing SOL payment...', {
-      myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA).toBase58(),
+      myPda: new anchor.web3.PublicKey(paymentProgramPda).toBase58(),
       payer: wallet.publicKey!.toBase58(),
       beneficiary: state.beneficiary.toBase58(),
       systemProgram: anchor.web3.SystemProgram.programId.toBase58(),
@@ -47,7 +49,7 @@ export function usePaymentContract() {
 
     return program.rpc.payForMint({
       accounts: {
-        myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA),
+        myPda: new anchor.web3.PublicKey(paymentProgramPda),
         payer: wallet.publicKey,
         beneficiary: state.beneficiary,
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -64,6 +66,7 @@ export function usePaymentContract() {
 
   const payForMintDay = useCallback(async (): Promise<string> => {
     const state = await fetchState();
+    const [paymentProgramPda] = await getPaymentStoragePdaAddress();
 
     const walletToken = await splToken.Token.getAssociatedTokenAddress(
       splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -74,7 +77,7 @@ export function usePaymentContract() {
     );
 
     console.log('initializing DAY payment...', {
-      myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA).toBase58(),
+      myPda: new anchor.web3.PublicKey(paymentProgramPda).toBase58(),
       payer: wallet.publicKey!.toBase58(),
       from: walletToken.toBase58(),
       beneficiaryDay: state.beneficiaryDay.toBase58(),
@@ -83,7 +86,7 @@ export function usePaymentContract() {
 
     return program.rpc.payForMintSpl({
       accounts: {
-        myPda: new anchor.web3.PublicKey(PAYMENT_PROGRAM_PDA),
+        myPda: new anchor.web3.PublicKey(paymentProgramPda),
         payer: wallet.publicKey,
         from: walletToken,
         beneficiaryDay: state.beneficiaryDay,
@@ -122,3 +125,12 @@ function extractIdFromLogs(logMessages: string[]): number {
 
   return Number(id);
 }
+
+async function getPaymentStoragePdaAddress() {
+  return await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(anchor.utils.bytes.utf8.encode('payment-storage'))],
+    new anchor.web3.PublicKey(PAYMENT_PROGRAM_ID)
+  );
+}
+
+getPaymentStoragePdaAddress().then((res) => console.log(res[0].toBase58()));
