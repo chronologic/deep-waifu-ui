@@ -51,7 +51,7 @@ export default function MainContent() {
               </Col>
             </Row>
             <br />
-            <Button href="#upload" size="large">
+            <Button href="#generator" size="large">
               Meet your DeepWaifu
             </Button>
           </Features>
@@ -72,7 +72,7 @@ export default function MainContent() {
             </Card>
           </Certificate>
           <br />
-          <Button href="#upload" size="large">
+          <Button href="#generator" size="large">
             Meet your DeepWaifu
           </Button>
           <TextBlock>

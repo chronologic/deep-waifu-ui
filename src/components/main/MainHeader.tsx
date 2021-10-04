@@ -48,7 +48,7 @@ export default function MainHeader() {
       <AppHeader />
       <CustomContent>
         <Content>
-          <div className="grid-wrapper">
+          <div className="grid-wrapper" id="generator">
             <div className="grid-layout">
               <div className="grid-item span-2">
                 <div className="selfie">
