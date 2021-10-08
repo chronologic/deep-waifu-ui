@@ -251,7 +251,7 @@ const CertificateForm = styled.div`
 `;
 
 const SwitchWrapper = styled.div`
-  min-width: 100px;
+  min-width: 110px;
 `;
 
 const CertificateImage = styled.div`
