@@ -4,14 +4,19 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 import { useWaifu } from '../../hooks';
+import { SOLANA_ENV } from '../../env';
 import { flamingo } from '../colors';
 
 const { Header } = Layout;
 const { Title } = Typography;
 
+const isMainnet = SOLANA_ENV.startsWith('mainnet');
+
 export default function AppHeader() {
   const wallet = useWallet();
   const { onResetState } = useWaifu();
+
+  console.log(wallet);
 
   return (
     <FixedHeader>
@@ -25,7 +30,10 @@ export default function AppHeader() {
               <Title>ディープ</Title>
               <Title className="titleRed">ワイフ</Title>
             </a>
-            <WalletMultiButton className={wallet.connected ? 'walletConnector' : 'walletConnector hidden'} />
+            <ButtonWrapper>
+              {!isMainnet && <div className="envLabel">{SOLANA_ENV}</div>}
+              <WalletMultiButton className={wallet.connected ? 'walletConnector' : 'walletConnector hidden'} />
+            </ButtonWrapper>
           </CustomMenu>
         </Header>
       </CustomHeader>
@@ -93,4 +101,16 @@ const FixedHeader = styled.div`
   width: 100%;
   box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
   background: white;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+  .envLabel {
+    color: ${flamingo};
+    font-weight: bold;
+  }
 `;
