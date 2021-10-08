@@ -16,8 +16,6 @@ export default function AppHeader() {
   const wallet = useWallet();
   const { onResetState } = useWaifu();
 
-  console.log(wallet);
-
   return (
     <FixedHeader>
       <CustomHeader>

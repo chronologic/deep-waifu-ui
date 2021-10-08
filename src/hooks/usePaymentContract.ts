@@ -99,7 +99,7 @@ export function usePaymentContract() {
     async (dayPayment: boolean): Promise<IPaymentResult> => {
       const tx = dayPayment ? await payForMintDay() : await payForMintSol();
 
-      await provider.connection.confirmTransaction(tx);
+      await provider.connection.confirmTransaction(tx, 'finalized');
       const id = await extractId(tx);
 
       return { tx, payer: wallet.publicKey!.toBase58(), id };
@@ -132,5 +132,3 @@ async function getPaymentStoragePdaAddress() {
     new anchor.web3.PublicKey(PAYMENT_PROGRAM_ID)
   );
 }
-
-getPaymentStoragePdaAddress().then((res) => console.log(res[0].toBase58()));
