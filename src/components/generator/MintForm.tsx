@@ -14,7 +14,7 @@ import { LAMPORTS_PER_DAY, SECOND_MILLIS } from '../../constants';
 import { IMintStatus } from '../../types';
 import { flamingo } from '../colors';
 import { Certificate } from '../certificate';
-import NftCounter from './NftCounter';
+import { NftCounter } from '../shared';
 import { KaomojiLoader } from '../shared';
 
 const { Title, Text } = Typography;
