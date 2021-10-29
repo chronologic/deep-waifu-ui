@@ -1,14 +1,15 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { Typography, Upload, Modal, Button } from 'antd';
+import { Typography, Upload, Modal, Button, Space } from 'antd';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import Cropper from 'react-easy-crop';
 
 import { fileToDataUrl, srcToFile } from '../../utils';
 import getCroppedImg from './cropImage';
+import { NftCounter } from '../shared';
 
 const { Dragger } = Upload;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface IProps {
   disabled: boolean;
@@ -50,10 +51,18 @@ export default function ImageUploader({ disabled, onUploadDone }: IProps) {
 
   const footer = (
     <Footer>
-      <Button onClick={handleCancel}>Cancel</Button>
-      <Button type="primary" className="crop" onClick={handleSubmit}>
-        Crop
-      </Button>
+      <Space direction="vertical" size="middle">
+        <Text className="text12">
+          For best results, your selfie should be a face-and-shoulders shot, directly facing the camera. Try as many
+          images as you wish.
+        </Text>
+        <div>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button type="primary" className="crop" onClick={handleSubmit}>
+            Crop
+          </Button>
+        </div>
+      </Space>
     </Footer>
   );
 
@@ -73,6 +82,9 @@ export default function ImageUploader({ disabled, onUploadDone }: IProps) {
         </p>
         <Title className="titleRed">(=^･ω･^=)</Title>
         <Title>Upload a Selfie Here</Title>
+        <NftCounter />
+        <br />
+        <br />
         <p>Photos you upload will NOT BE PUBLISHED</p>
       </Dragger>
       <Modal visible={showCropper} destroyOnClose closable={false} width={400} footer={footer}>
@@ -104,4 +116,9 @@ const Footer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  text-align: center;
+
+  .text12 {
+    font-size: 12px;
+  }
 `;
